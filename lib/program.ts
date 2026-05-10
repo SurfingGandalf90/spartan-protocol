@@ -493,7 +493,10 @@ const COOLDOWNS = {
   ],
 };
 
-// ─── LOGO ──────────────────────────────────────────────────────────────────
+// ─── SCHEDULE TIMING ─────────────────────────────────────────────────────────
+const SESSION_DURATIONS = { lift: 50, run: 30, dance: 60 };
+const WORK_END = { h: 14, m: 30 };
+const FAMILY_TARGET = { h: 17, m: 30 };
 
 // ─── HELPER FUNCTIONS ────────────────────────────────────────────────────
 export function fmtTime(h: number, m: number): string {
@@ -519,7 +522,6 @@ export {
   CURRENT_WEEK, WEEK_THEME, RPE_RANGE,
   NRC_RUN_DAYS, NRC_PROGRAM,
   WEEKLY_SCHEDULE, DAYS, COOLDOWNS,
-  NEURO_SNACKS, EXERCISE_META, EXERCISE_KNOWLEDGE,
+  NEURO_SNACKS,
   SESSION_DURATIONS, WORK_END, FAMILY_TARGET,
-  DEFAULT_LIFT_DAYS, DEFAULT_RUN_DAYS, ALL_DAYS,
 }
