@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import {
-  DAYS, COOLDOWNS, NRC_PROGRAM, NEURO_SNACKS, EXERCISE_META, EXERCISE_KNOWLEDGE,
+  DAYS, COOLDOWNS, NRC_PROGRAM, NEURO_SNACKS,
   SESSION_DURATIONS, WORK_END, FAMILY_TARGET,
   WEEKLY_SCHEDULE, WEEK_THEME, RPE_RANGE, fmtTime, buildTimeline,
 } from '@/lib/program'
