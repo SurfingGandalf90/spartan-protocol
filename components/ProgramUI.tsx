@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import {
   DAYS, COOLDOWNS, NRC_PROGRAM, NEURO_SNACKS, EXERCISE_META, EXERCISE_KNOWLEDGE,
-  SESSION_DURATIONS, WORK_END, FAMILY_TARGET, DEFAULT_LIFT_DAYS, DEFAULT_RUN_DAYS, ALL_DAYS,
+  SESSION_DURATIONS, WORK_END, FAMILY_TARGET,
   WEEKLY_SCHEDULE, WEEK_THEME, RPE_RANGE, fmtTime, buildTimeline,
 } from '@/lib/program'
 
@@ -613,17 +613,7 @@ function NeuroSnackView() {
   );
 }
 
-    const start = fmtTime(h, m);
-    const dur = SESSION_DURATIONS[s.type] || 45;
-    m += dur;
-    h += Math.floor(m / 60);
-    m = m % 60;
-    const end = fmtTime(h, m);
-    return { ...s, start, end, dur };
-  });
-}
 
-// Default lift assignment: dayId -> weekday
 // Default lift assignment: dayId -> weekday
 const DEFAULT_LIFT_DAYS = { 1: "Monday", 2: "Tuesday", 3: "Thursday", 4: "Saturday" };
 const DEFAULT_RUN_DAYS  = { 1: "Monday", 2: "Tuesday", 3: "Thursday", 4: "Friday" };
