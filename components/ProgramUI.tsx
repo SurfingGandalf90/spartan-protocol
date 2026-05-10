@@ -261,7 +261,13 @@ function LogModal({ day, weekNum, onSave, onClose, existingLog, unit, saveUnit }
 }
 
 // ─── COACH SYSTEM CONTEXT ──────────────────────────────────────────────────
-
+const TOPIC_KEYWORDS: Record<string, string[]> = {
+  cue:  ["cue", "form", "how do i", "how to", "technique", "tips", "doing this right", "proper", "correct", "setup"],
+  why:  ["why", "reason", "point", "purpose", "benefit", "what does", "what is this for", "programmed"],
+  sub:  ["substitute", "sub", "swap", "alternative", "replace", "instead", "different", "can't do", "cant do", "modification"],
+  back: ["back", "hurt", "pain", "spine", "disc", "sore", "tight", "twinge", "safe", "worried", "should i stop", "stop"],
+  form: ["form", "technique", "setup", "position", "how do", "elbow", "knee", "foot", "feet", "stance", "grip", "hand"],
+};
 
 function getCoachResponse(input: string, day: any) {
   const q = input.toLowerCase();
