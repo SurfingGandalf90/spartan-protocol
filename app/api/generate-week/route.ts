@@ -20,7 +20,9 @@ export async function GET(request) {
   )
 
   try {
-    const { data: users, error: usersError } = await supabase.from('profiles').select('id, email, current_week')
+    const res = await fetch(process.env.NEXT_PUBLIC_SUPABASE_URL + "/rest/v1/profiles?select=id,email,current_week", { headers: { "apikey": process.env.SUPABASE_SERVICE_ROLE_KEY, "Authorization": "Bearer " + process.env.SUPABASE_SERVICE_ROLE_KEY } })
+    const users = await res.json()
+    const usersError = null
     if (usersError) return NextResponse.json({ usersError: String(usersError) })
     return NextResponse.json({ users, url: process.env.NEXT_PUBLIC_SUPABASE_URL })
 
