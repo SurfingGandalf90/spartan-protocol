@@ -17,9 +17,10 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const supabase = createClient(
+const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { db: { schema: 'public' }, auth: { persistSession: false } }
   )
 
   try {
@@ -28,8 +29,6 @@ export async function GET(request: Request) {
       .select('id, email, current_week')
 
     if (usersError) throw usersError
-    return NextResponse.json({ url: process.env.NEXT_PUBLIC_SUPABASE_URL, key: process.env.SUPABASE_SERVICE_ROLE_KEY?.slice(0,20), users })
-    return NextResponse.json({ url: process.env.NEXT_PUBLIC_SUPABASE_URL, key: process.env.SUPABASE_SERVICE_ROLE_KEY?.slice(0,20), users })
 
     const results = []
 
@@ -93,7 +92,12 @@ export async function GET(request: Request) {
   }
 }
 
-async function sendProgramReadyEmail(email, isKimberly, week, theme) {
+async function sendProgramReadyEmail(
+  email: string,
+  isKimberly: boolean,
+  week: number,
+  theme: string
+) {
   const name = isKimberly ? 'Kimberly' : 'Cody'
   const programName = isKimberly ? "Kimberly's Program" : 'Spartan Protocol'
   const accentColor = isKimberly ? '#F472B6' : '#E8C547'
@@ -101,46 +105,133 @@ async function sendProgramReadyEmail(email, isKimberly, week, theme) {
   await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
-      'Authorization': 'Bearer ' + process.env.RESEND_EMAIL_API_KEY,
+      'Authorization': `Bearer ${process.env.RESEND_EMAIL_API_KEY}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       from: 'Spartan Protocol <onboarding@resend.dev>',
       to: email,
-      subject: 'Week ' + week + ' is ready',
-      html: '<div style="background:#0F0F0F;color:#E8E8E0;padding:40px;max-width:600px;margin:0 auto;"><div style="font-size:11px;color:' + accentColor + ';letter-spacing:0.2em;text-transform:uppercase;margin-bottom:8px;">' + programName + '</div><div style="font-size:28px;font-weight:800;margin-bottom:8px;">Week ' + week + ' is ready.</div><div style="font-size:13px;color:#666;margin-bottom:32px;">' + theme + '</div><div style="border-left:2px solid ' + accentColor + ';padding-left:16px;margin-bottom:32px;font-size:13px;color:#aaa;">Hey ' + name + ' your program for Week ' + week + ' has been generated based on last weeks logs.</div><a href="' + APP_URL + '" style="display:inline-block;background:' + accentColor + ';color:#0F0F0F;font-weight:700;font-size:12px;text-transform:uppercase;padding:14px 28px;text-decoration:none;">Open Spartan Protocol</a></div>'
+      subject: `Week ${week} is ready — ${theme}`,
+      html: `
+        <div style="background:#0F0F0F;color:#E8E8E0;font-family:'DM Mono',monospace;padding:40px;max-width:600px;margin:0 auto;">
+          <div style="font-size:11px;color:${accentColor};letter-spacing:0.2em;text-transform:uppercase;margin-bottom:8px;">
+            ${programName}
+          </div>
+          <div style="font-size:28px;font-weight:800;margin-bottom:8px;line-height:1.1;">
+            Week ${week} is ready.
+          </div>
+          <div style="font-size:13px;color:#666;margin-bottom:32px;">
+            ${theme}
+          </div>
+          <div style="border-left:2px solid ${accentColor};padding-left:16px;margin-bottom:32px;font-size:13px;color:#aaa;line-height:1.6;">
+            Hey ${name} — your program for Week ${week} has been generated based on last week's logs.
+            Load progressions, rep schemes, and coaching cues are all updated and waiting for you.
+          </div>
+          <a href="${APP_URL}" style="display:inline-block;background:${accentColor};color:#0F0F0F;font-weight:700;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;padding:14px 28px;text-decoration:none;">
+            Open Spartan Protocol →
+          </a>
+          <div style="margin-top:40px;font-size:10px;color:#333;letter-spacing:0.1em;text-transform:uppercase;">
+            Spartan Protocol · Auto-generated every Sunday
+          </div>
+        </div>
+      `
     })
   })
 }
 
-function buildCodyPrompt(logSummary, currentWeek, nextWeek) {
-  return 'You are a strength coach for Spartan Protocol, a back-safe hypertrophy program for a male athlete with a history of back issues. His program is 4 days: Push, Glute/Ham, Pull, Full Body.\n\nWeek ' + currentWeek + ' log:\n' + logSummary + '\n\nGenerate Week ' + nextWeek + '. Rules:\n- No spinal flexion under load\n- No axial compression\n- Progress load 5-10% on Too Easy\n- Keep load on Just Right\n- Regress on Too Hard\n- RPE 7-8\n\nRespond with ONLY JSON:\n{"week":' + nextWeek + ',"theme":"theme","rpeRange":"7-8","days":[{"id":1,"label":"Day 1","title":"Push Day","accent":"#E8C547","supersets":[{"id":"A","name":"Superset A","exercises":[{"name":"Exercise","sets":"3","reps":"8-10","load":"weight","note":"cue"}]}]}]}'
-}
+function buildCodyPrompt(logSummary: string, currentWeek: number, nextWeek: number): string {
+  return `You are a strength coach for Spartan Protocol, a back-safe hypertrophy program for a male athlete with a history of back issues. His program is 4 days: Push, Glute/Ham, Pull, Full Body.
 
-function buildKimberlyPrompt(logSummary, currentWeek, nextWeek) {
-  const rpe = nextWeek <= 2 ? '6-7' : nextWeek <= 4 ? '7-8' : '8-9'
-  return 'You are a strength coach for Spartan Protocol generating Kimberly\'s Program — a 3-day full body circuit for fat loss, strength, and back safety. Sessions 35-38 min, no rest between stations.\n\nFormat: Warmup (2 rounds), Circuit A (3 rounds), Circuit B (3 rounds), Finisher, Cooldown.\n\nBack safety rules:\n- No spinal flexion under load\n- No axial compression\n- All rows chest-supported\n- Deadlifts elevated\n- Core: dead bugs, pallof press, planks only\n\nWeek ' + currentWeek + ' logs:\n' + logSummary + '\n\nGenerate Week ' + nextWeek + '. RPE target: ' + rpe + '.\n\nRespond with ONLY JSON:\n{"week":' + nextWeek + ',"theme":"theme","rpeRange":"' + rpe + '","days":[{"id":1,"label":"Day 1","title":"Full Body Circuit A","accent":"#F472B6","focus":"Lower body + core","duration":"35 min","note":"day note","supersets":[{"id":"W","name":"Warmup - 2 rounds","exercises":[{"name":"Exercise","sets":"2","reps":"10","load":"Bodyweight","note":"cue"}]},{"id":"A","name":"Circuit A - 3 rounds","exercises":[{"name":"Exercise","sets":"3","reps":"12","load":"weight","note":"cue"}]},{"id":"B","name":"Circuit B - 3 rounds","exercises":[{"name":"Exercise","sets":"3","reps":"10","load":"weight","note":"cue"}]},{"id":"F","name":"Finisher - 1 round","exercises":[{"name":"Exercise","sets":"1","reps":"desc","load":"weight","note":"cue"}]},{"id":"C","name":"Cooldown","exercises":[{"name":"Stretch","sets":"1","reps":"60 sec/side","load":"Bodyweight","note":"cue"}]}]}]}'
-}
+User's Week ${currentWeek} log:
+${logSummary}
 
-function buildLogSummary(logs, week) {
-  if (!logs.length) return 'No logs found for this week — maintain current loads and structure.'
-  let summary = 'Week ' + week + ' Summary:\n'
-  logs.forEach(function(log) {
-    summary += '\n' + log.day_title + ' (' + log.date + '):\n'
-    summary += '  Status: ' + (log.completed ? 'Completed' : 'Skipped') + '\n'
-    summary += '  RPE: ' + log.rpe + '/10\n'
-    if (log.exercises) {
-      Object.entries(log.exercises).forEach(function(entry) {
-        var name = entry[0]
-        var data = entry[1]
-        if (data.difficulty || data.weight) {
-          summary += '  ' + name + ': ' + (data.difficulty === 'easy' ? 'TOO EASY' : data.difficulty === 'hard' ? 'TOO HARD' : 'JUST RIGHT')
-          if (data.weight) summary += ' @ ' + data.weight + (data.unit || 'lb')
-          summary += '\n'
+Generate Week ${nextWeek} of his program. Rules:
+- No spinal flexion under load
+- No axial compression exercises
+- Progress load by 5-10% on exercises logged as "Too Easy"
+- Keep same load on exercises logged as "Just Right"
+- Regress load on exercises logged as "Too Hard"
+- RPE target: 7-8 for Week ${nextWeek}
+- Keep the same exercise structure but vary rep schemes
+
+Respond with ONLY a JSON object in this exact format, no other text:
+{
+  "week": ${nextWeek},
+  "theme": "theme for this week",
+  "rpeRange": "7-8",
+  "days": [
+    {
+      "id": 1,
+      "label": "Day 1",
+      "title": "Push Day",
+      "accent": "#E8C547",
+      "supersets": [
+        {
+          "id": "A",
+          "name": "Superset A",
+          "exercises": [
+            {
+              "name": "Exercise Name",
+              "sets": "3",
+              "reps": "8-10",
+              "load": "specific weight or bodyweight",
+              "note": "coaching cue"
+            }
+          ]
         }
-      })
+      ]
     }
-    if (log.notes) summary += '  Notes: ' + log.notes + '\n'
-  })
-  return summary
+  ]
+}`
 }
+
+function buildKimberlyPrompt(logSummary: string, currentWeek: number, nextWeek: number): string {
+  return `You are a strength coach for Spartan Protocol. You are generating the next week of Kimberly's Program — a 3-day full body circuit program designed for fat loss, strength, and back safety. Sessions run 35-38 minutes with no rest between stations (15-20 sec transitions only).
+
+Format: Each day has a Warmup (2 rounds), Circuit A (3 rounds), Circuit B (3 rounds), a Finisher (1-2 rounds), and a Cooldown. No rest periods — keep moving.
+
+Back safety rules (strict):
+- No spinal flexion under load
+- No axial compression (no barbell squats, deadlifts from floor, overhead press standing)
+- All rows must be chest-supported
+- Deadlifts must be elevated (KB on step or plate)
+- Core work: dead bugs, pallof press, plank holds only — no crunches or sit-ups
+
+Progression rules based on Week ${currentWeek} logs:
+${logSummary}
+
+- Progress load by 5-10% on exercises logged as "Too Easy"
+- Keep same load on exercises logged as "Just Right"
+- Regress load or reduce reps on exercises logged as "Too Hard"
+- RPE target: ${nextWeek <= 2 ? '6-7' : nextWeek <= 4 ? '7-8' : '8-9'} for Week ${nextWeek}
+- Vary rep schemes and circuit order week to week to prevent adaptation
+- Keep sessions at 35-38 minutes total
+
+Respond with ONLY a JSON object in this exact format, no other text:
+{
+  "week": ${nextWeek},
+  "theme": "theme for this week",
+  "rpeRange": "${nextWeek <= 2 ? '6-7' : nextWeek <= 4 ? '7-8' : '8-9'}",
+  "days": [
+    {
+      "id": 1,
+      "label": "Day 1",
+      "title": "Full Body Circuit A",
+      "accent": "#F472B6",
+      "focus": "Lower body + core",
+      "duration": "35 min",
+      "note": "coaching note for the day",
+      "supersets": [
+        {
+          "id": "W",
+          "name": "Warmup — 2 rounds",
+          "exercises": [
+            {
+              "name": "Exercise Name",
+              "sets": "2",
+              "reps": "10",
+              "load": "Bodyweight",
+              "note": "coaching cue"
+            }
+          ]
+        },
