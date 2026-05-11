@@ -1,5 +1,4 @@
 'use client'
-// @ts-nocheck
 
 import { useState, useEffect } from 'react'
 import AppShell, { useAuth } from '@/components/AppShell'
@@ -10,6 +9,9 @@ import {
   getPreferences, savePreferences,
   getSchedule, saveSchedule,
 } from '@/lib/supabase'
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const ProgramUIAny = ProgramUI as any
 
 export default function Home() {
   return (
@@ -103,7 +105,7 @@ function SpartanApp() {
   }
 
   return (
-    <ProgramUI
+    <ProgramUIAny
       currentWeek={currentWeek}
       sessionLogs={sessionLogs}
       runLogs={runLogs}
