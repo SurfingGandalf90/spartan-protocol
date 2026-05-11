@@ -21,7 +21,8 @@ export async function GET(request) {
 
   try {
     const { data: users, error: usersError } = await supabase.from('profiles').select('id, email, current_week')
-    if (usersError) throw usersError
+    if (usersError) return NextResponse.json({ usersError: String(usersError) })
+    return NextResponse.json({ users, url: process.env.NEXT_PUBLIC_SUPABASE_URL })
 
     const results = []
     for (const user of users || []) {
