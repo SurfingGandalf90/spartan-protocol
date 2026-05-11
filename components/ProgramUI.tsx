@@ -1,5 +1,5 @@
-'use client'
 // @ts-nocheck
+'use client'
 
 import { useState, useEffect, useRef } from 'react'
 import {
@@ -1272,7 +1272,7 @@ function ScheduleView() {
 }
 
 // ─── MAIN APP ──────────────────────────────────────────────────────────────
-export default function ProgramUI() {
+export default function ProgramUI(props: any) {
   const [activeDay, setActiveDay] = useState(0);
   const [openSets, setOpenSets] = useState({});
   const [showWarmup, setShowWarmup] = useState(false);
