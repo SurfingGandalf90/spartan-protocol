@@ -59,7 +59,7 @@ function LoginScreen() {
 function ProfileSelector({ user, onSelect }: { user: User; onSelect: (p: string) => void }) {
   const profiles = [
     { id: 'primary', name: 'Cody', subtitle: 'Back-safe hypertrophy + NRC running', accent: '#E8C547' },
-    { id: 'wife', name: "Wife's Program", subtitle: 'Fat loss · Strength · Circuit style', accent: '#F472B6' },
+    { id: 'wife', name: "Kimberly's Program", subtitle: 'Fat loss · Strength · Circuit style', accent: '#F472B6' },
   ]
   return (
     <div style={{ minHeight: '100vh', background: '#0F0F0F', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', fontFamily: "'DM Mono', monospace" }}>
