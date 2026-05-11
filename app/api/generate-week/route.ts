@@ -36,7 +36,7 @@ export async function GET(request) {
         const prompt = isKimberly ? buildKimberlyPrompt(logSummary, user.current_week || 1, nextWeek) : buildCodyPrompt(logSummary, user.current_week || 1, nextWeek)
 
         const message = await anthropic.messages.create({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-4-5',
           max_tokens: 4000,
           messages: [{ role: 'user', content: prompt }]
         })
