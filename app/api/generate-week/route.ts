@@ -13,6 +13,8 @@ const anthropic = new Anthropic({
 })
 
 const KIMBERLY_EMAIL = 'kimberly@kimberlymoller.com'
+const CODY_EMAIL = 'ingram.cody90@pm.me'
+const APP_URL = 'https://spartan-fixed.vercel.app'
 
 export async function GET(request: Request) {
   // Verify this is called by Vercel Cron (or manually with secret)
@@ -83,6 +85,9 @@ export async function GET(request: Request) {
           .from('profiles')
           .update({ current_week: nextWeek })
           .eq('id', user.id)
+
+        // Send email notification
+        await sendProgramReadyEmail(user.email, isKimberly, nextWeek, programData.theme)
 
         results.push({ userId: user.id, email: user.email, status: 'success', week: nextWeek })
       } catch (userError) {
@@ -256,6 +261,55 @@ Respond with ONLY a JSON object in this exact format, no other text:
     }
   ]
 }`
+}
+
+// ─── Email Notification ───────────────────────────────────────────────────────
+
+async function sendProgramReadyEmail(
+  email: string,
+  isKimberly: boolean,
+  week: number,
+  theme: string
+) {
+  const name = isKimberly ? 'Kimberly' : 'Cody'
+  const programName = isKimberly ? "Kimberly's Program" : 'Spartan Protocol'
+  const accentColor = isKimberly ? '#F472B6' : '#E8C547'
+
+  await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: 'Spartan Protocol <onboarding@resend.dev>',
+      to: email,
+      subject: `Week ${week} is ready — ${theme}`,
+      html: `
+        <div style="background:#0F0F0F;color:#E8E8E0;font-family:'DM Mono',monospace;padding:40px;max-width:600px;margin:0 auto;">
+          <div style="font-size:11px;color:${accentColor};letter-spacing:0.2em;text-transform:uppercase;margin-bottom:8px;">
+            ${programName}
+          </div>
+          <div style="font-size:28px;font-weight:800;margin-bottom:8px;line-height:1.1;">
+            Week ${week} is ready.
+          </div>
+          <div style="font-size:13px;color:#666;margin-bottom:32px;">
+            ${theme}
+          </div>
+          <div style="border-left:2px solid ${accentColor};padding-left:16px;margin-bottom:32px;font-size:13px;color:#aaa;line-height:1.6;">
+            Hey ${name} — your program for Week ${week} has been generated based on last week's logs. 
+            Load progressions, rep schemes, and coaching cues are all updated and waiting for you.
+          </div>
+          <a href="${APP_URL}" style="display:inline-block;background:${accentColor};color:#0F0F0F;font-weight:700;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;padding:14px 28px;text-decoration:none;">
+            Open Spartan Protocol →
+          </a>
+          <div style="margin-top:40px;font-size:10px;color:#333;letter-spacing:0.1em;text-transform:uppercase;">
+            Spartan Protocol · Auto-generated every Sunday
+          </div>
+        </div>
+      `
+    })
+  })
 }
 
 // ─── Log Summary Builder ──────────────────────────────────────────────────────
