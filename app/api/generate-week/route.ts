@@ -24,7 +24,7 @@ export async function GET(request) {
     const users = await res.json()
     const usersError = null
     if (usersError) return NextResponse.json({ usersError: String(usersError) })
-    return NextResponse.json({ users, url: process.env.NEXT_PUBLIC_SUPABASE_URL })
+    // debug removed
 
     const results = []
     for (const user of users || []) {
