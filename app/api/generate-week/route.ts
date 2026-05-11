@@ -30,7 +30,7 @@ export async function GET(request: Request) {
       .select('id, email, current_week')
 
     if (usersError) throw usersError
-    return NextResponse.json({ debug: true, users, usersError })
+    return NextResponse.json({ debug: true, users, usersError, url: process.env.NEXT_PUBLIC_SUPABASE_URL, hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY })
 
     const results = []
 
