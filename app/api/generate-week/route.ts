@@ -30,6 +30,7 @@ export async function GET(request: Request) {
       .select('id, email, current_week')
 
     if (usersError) throw usersError
+    return NextResponse.json({ debug: true, users, usersError })
 
     const results = []
 
