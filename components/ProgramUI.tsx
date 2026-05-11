@@ -3,10 +3,13 @@
 
 import { useState, useEffect, useRef } from 'react'
 import {
-  DAYS, COOLDOWNS, NRC_PROGRAM, NEURO_SNACKS,
-  SESSION_DURATIONS, WORK_END, FAMILY_TARGET,
+  DAYS, COOLDOWNS, NRC_PROGRAM, NEURO_SNACKS, EXERCISE_META, EXERCISE_KNOWLEDGE,
+  SESSION_DURATIONS, WORK_END, FAMILY_TARGET, CURRENT_WEEK as PROGRAM_WEEK,
   WEEKLY_SCHEDULE, WEEK_THEME, RPE_RANGE, fmtTime, buildTimeline,
 } from '@/lib/program'
+
+// Module-level week reference for sub-components
+let CURRENT_WEEK = PROGRAM_WEEK;
 
 function SpartanLogo({ size = 48 }: any) {
   return (
@@ -871,6 +874,8 @@ export default function ProgramUI({
   onSaveLog, onSaveRunLog, onSaveUnit, onSaveSchedule, user
 }: any) {
   const CURRENT_WEEK = currentWeekProp;
+  // Sync module-level ref for sub-components
+  if (typeof window !== "undefined") { (window as any).__spartanWeek = currentWeekProp; }
   const [logSaved, setLogSaved] = useState(false);
 
   useEffect(() => {
