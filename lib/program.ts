@@ -1,5 +1,5 @@
-// ─── SPARTAN PROTOCOL — Program Data & Helpers ───────────────────────────
-
+// @ts-nocheck
+// lib/program.ts
 
 // ─── WEEK DATA — Claude updates this block each week ───────────────────────
 const CURRENT_WEEK = 2;
@@ -493,35 +493,111 @@ const COOLDOWNS = {
   ],
 };
 
-// ─── SCHEDULE TIMING ─────────────────────────────────────────────────────────
-const SESSION_DURATIONS = { lift: 50, run: 30, dance: 60 };
-const WORK_END = { h: 14, m: 30 };
-const FAMILY_TARGET = { h: 17, m: 30 };
+// ─── LOGO ──────────────────────────────────────────────────────────────────
 
-// ─── HELPER FUNCTIONS ────────────────────────────────────────────────────
-export function fmtTime(h: number, m: number): string {
-  const ampm = h >= 12 ? "PM" : "AM";
-  const hour = h > 12 ? h - 12 : h === 0 ? 12 : h;
-  return hour + ":" + String(m).padStart(2, "0") + " " + ampm;
-}
+// ─── WIFE'S PROGRAM — Week 1 ─────────────────────────────────────────────────
+export const WIFE_CURRENT_WEEK = 1;
+export const WIFE_WEEK_THEME = "Build the base — own the movement, feel the burn";
+export const WIFE_RPE_RANGE = "6–7";
 
-export function buildTimeline(sessions: any[]): any[] {
-  let h = WORK_END.h, m = WORK_END.m;
-  return sessions.map(s => {
-    const start = fmtTime(h, m);
-    const dur = SESSION_DURATIONS[s.type as keyof typeof SESSION_DURATIONS] || 45;
-    m += dur;
-    h += Math.floor(m / 60);
-    m = m % 60;
-    const end = fmtTime(h, m);
-    return { ...s, start, end, dur };
-  });
-}
+export const WIFE_DAYS = [
+  {
+    id: 1, label: "Day 1", title: "Full Body Circuit A", accent: "#F472B6",
+    duration: "35 min", focus: "Lower body + core",
+    note: "Move station to station with 15-20 sec transition only. No sitting down.",
+    supersets: [
+      { id: "W", name: "Warmup — 2 rounds", exercises: [
+        { name: "World\'s Greatest Stretch", sets: "2", reps: "5/side", load: "Bodyweight", note: "Hip flexor + thoracic rotation. Do it slow." },
+        { name: "Glute Bridge (bodyweight)", sets: "2", reps: "15", load: "Bodyweight", note: "Squeeze hard at top, 1 second hold." },
+        { name: "Band Pull-Apart", sets: "2", reps: "15", load: "Light band", note: "Wake up the upper back." },
+      ]},
+      { id: "A", name: "Circuit A — 3 rounds", exercises: [
+        { name: "KB Goblet Squat", sets: "3", reps: "12", load: "20-26 lb KB", note: "Chest tall, elbows inside knees. Sit into it." },
+        { name: "KB Deadlift (elevated)", sets: "3", reps: "10", load: "26-35 lb KB", note: "KB on step or plate. Push hips back, neutral spine. Stand tall." },
+        { name: "Plank Hold", sets: "3", reps: "30 sec", load: "Bodyweight", note: "Squeeze glutes, don\'t let hips drop. Breathe." },
+      ]},
+      { id: "B", name: "Circuit B — 3 rounds", exercises: [
+        { name: "Reverse Lunge (DB)", sets: "3", reps: "8/side", load: "10-15 lb DBs", note: "Step back, front knee over ankle. Tall torso." },
+        { name: "Chest-Supported DB Row (incline bench)", sets: "3", reps: "10", load: "15-20 lb DBs", note: "Chest on incline bench. Row elbows back. Spine fully supported." },
+        { name: "Dead Bug", sets: "3", reps: "6/side", load: "Bodyweight", note: "Lower back flat to floor the whole time. Slow and controlled." },
+      ]},
+      { id: "F", name: "Finisher — 1 round", exercises: [
+        { name: "KB Farmer Carry", sets: "1", reps: "3x20m", load: "26-35 lb KBs", note: "Walk tall, packed shoulders. Rest 30 sec between laps." },
+      ]},
+      { id: "C", name: "Cooldown", exercises: [
+        { name: "90/90 Hip Stretch", sets: "1", reps: "60 sec/side", load: "Bodyweight", note: "Sit tall, breathe into the hip." },
+        { name: "Cat-Cow", sets: "1", reps: "10 slow reps", load: "Bodyweight", note: "Full spinal wave. Exhale on round, inhale on extend." },
+      ]},
+    ]
+  },
+  {
+    id: 2, label: "Day 2", title: "Full Body Circuit B", accent: "#F472B6",
+    duration: "35 min", focus: "Upper body + conditioning",
+    note: "Keep moving. If you need to pause, 15 seconds max then go again.",
+    supersets: [
+      { id: "W", name: "Warmup — 2 rounds", exercises: [
+        { name: "Arm Circle + Shoulder Roll", sets: "2", reps: "10 each direction", load: "Bodyweight", note: "Loosen the shoulder girdle." },
+        { name: "Bodyweight Squat", sets: "2", reps: "10", load: "Bodyweight", note: "Controlled, full depth, chest tall." },
+        { name: "Hip Circle (standing)", sets: "2", reps: "10/side", load: "Bodyweight", note: "Hands on hips, make big circles." },
+      ]},
+      { id: "A", name: "Circuit A — 3 rounds", exercises: [
+        { name: "Push-Up (from knees or full)", sets: "3", reps: "8-12", load: "Bodyweight", note: "Elbows at 45 degrees. Lower slow. Knees totally fine." },
+        { name: "DB Lateral Raise", sets: "3", reps: "12", load: "8-10 lb DBs", note: "Lead with elbows. Stop at shoulder height. Don\'t swing." },
+        { name: "Glute Bridge (KB)", sets: "3", reps: "12", load: "26-35 lb KB", note: "Drive through heels. Squeeze hard at top. 1-sec hold." },
+      ]},
+      { id: "B", name: "Circuit B — 3 rounds", exercises: [
+        { name: "Chest-Supported KB Row (incline bench)", sets: "3", reps: "10/side", load: "20-26 lb KB", note: "Lie chest-down on incline bench. Row to hip. Spine fully supported." },
+        { name: "Step-Up (bodyweight)", sets: "3", reps: "10/side", load: "Bodyweight", note: "Drive through heel on box. Tall torso. Don\'t push off bottom foot." },
+        { name: "Side-Lying Hip Abduction", sets: "3", reps: "15/side", load: "Glute band", note: "Heel slightly higher than toes. Pause at top." },
+      ]},
+      { id: "F", name: "Finisher — 2 rounds", exercises: [
+        { name: "Bike Erg (easy pace)", sets: "2", reps: "3 min", load: "Bodyweight", note: "Easy effort. Zero back demand. Just move." },
+      ]},
+      { id: "C", name: "Cooldown", exercises: [
+        { name: "Doorway Chest Stretch", sets: "1", reps: "45 sec/side", load: "Bodyweight", note: "Elbow at 90 degrees, lean through doorway gently." },
+        { name: "Child\'s Pose", sets: "1", reps: "60 sec", load: "Bodyweight", note: "Arms extended, breathe into lower back." },
+      ]},
+    ]
+  },
+  {
+    id: 3, label: "Day 3", title: "Full Body Circuit C", accent: "#F472B6",
+    duration: "38 min", focus: "Total body + metabolic",
+    note: "This one moves fastest. Station to station. You\'ll feel this one.",
+    supersets: [
+      { id: "W", name: "Warmup — 2 rounds", exercises: [
+        { name: "Jumping Jack (low impact march if needed)", sets: "2", reps: "20", load: "Bodyweight", note: "Get the heart rate up gently." },
+        { name: "Leg Swing (front/back)", sets: "2", reps: "10/side", load: "Bodyweight", note: "Hold wall for balance. Controlled swing." },
+        { name: "Hip Flexor Lunge + Reach", sets: "2", reps: "5/side", load: "Bodyweight", note: "Step into lunge, reach opposite arm overhead. Hold 2 sec." },
+      ]},
+      { id: "A", name: "Circuit A — 3 rounds", exercises: [
+        { name: "KB Deadlift (elevated)", sets: "3", reps: "10", load: "35-44 lb KB", note: "KB on step or plate. Push hips back, chest tall, neutral spine." },
+        { name: "Push-Up (from knees or full)", sets: "3", reps: "8-10", load: "Bodyweight", note: "Control the lowering. Elbows 45 degrees." },
+        { name: "Pallof Press Hold (band)", sets: "3", reps: "20 sec/side", load: "Light-medium band", note: "Press out, hold, don\'t rotate. Pure back protection." },
+      ]},
+      { id: "B", name: "Circuit B — 3 rounds", exercises: [
+        { name: "Sumo Squat (KB)", sets: "3", reps: "12", load: "20-26 lb KB", note: "Wide stance, toes out. KB hangs between legs. Chest tall." },
+        { name: "DB Hammer Curl", sets: "3", reps: "10", load: "12-15 lb DBs", note: "Neutral grip, elbows pinned. Slow lower." },
+        { name: "Suitcase Carry", sets: "3", reps: "20m/side", load: "26-35 lb KB", note: "Walk tall. Don\'t lean toward weight. Hips level." },
+      ]},
+      { id: "F", name: "Finisher — 5 min AMRAP", exercises: [
+        { name: "Squat x5 / Push-Up x5 / Plank 10 sec", sets: "1", reps: "AMRAP 5 min", load: "Bodyweight", note: "As many rounds as possible. Rest only when needed." },
+      ]},
+      { id: "C", name: "Cooldown", exercises: [
+        { name: "Figure-4 Hip Stretch (lying)", sets: "1", reps: "60 sec/side", load: "Bodyweight", note: "Lie on back, cross ankle over knee, pull toward chest." },
+        { name: "Thread the Needle", sets: "1", reps: "8/side", load: "Bodyweight", note: "On all fours, thread one arm under. Thoracic rotation — not lumbar." },
+      ]},
+    ]
+  }
+];
 
 export {
-  CURRENT_WEEK, WEEK_THEME, RPE_RANGE,
-  NRC_RUN_DAYS, NRC_PROGRAM,
-  WEEKLY_SCHEDULE, DAYS, COOLDOWNS,
+  CURRENT_WEEK,
+  WEEK_THEME,
+  RPE_RANGE,
+  NRC_RUN_DAYS,
+  NRC_PROGRAM,
+  WEEKLY_SCHEDULE,
   NEURO_SNACKS,
-  SESSION_DURATIONS, WORK_END, FAMILY_TARGET,
-}
+  DAYS,
+  COOLDOWNS,
+};

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import AppShell, { useAuth } from '@/components/AppShell'
 import ProgramUI from '@/components/ProgramUI'
+import WifeUI from '@/components/WifeUI'
 import {
   getSessionLogs, saveSessionLog,
   getRunLogs, saveRunLog,
@@ -22,7 +23,7 @@ export default function Home() {
 }
 
 function SpartanApp() {
-  const { user } = useAuth()
+  const { user, profile } = useAuth()
   const [loaded, setLoaded] = useState(false)
   const [currentWeek, setCurrentWeek] = useState(2)
   const [sessionLogs, setSessionLogs] = useState<Record<string, any>>({})
@@ -104,6 +105,12 @@ function SpartanApp() {
     )
   }
 
+  // Wife's program
+  if (profile === 'wife') {
+    return <WifeUI sessionLogs={sessionLogs} onSaveLog={handleSaveLog} user={user} />
+  }
+
+  // Cody's program
   return (
     <ProgramUIAny
       currentWeek={currentWeek}
