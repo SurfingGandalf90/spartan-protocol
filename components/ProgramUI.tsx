@@ -1075,7 +1075,7 @@ function ScheduleView() {
 
   const saveAssignments = (next) => {
     setAssignments(next);
-    try { localStorage.setItem("schedule-assignments", JSON.stringify(next)); } catch {}
+    try { localStorage.setItem("schedule-assignments", JSON.stringify(next)); window.dispatchEvent(new CustomEvent("schedule-updated", { detail: next })); } catch {}
   };
 
   const getDay = (key, def) => assignments[key] || def;
@@ -1352,7 +1352,7 @@ export default function ProgramUI(props: any) {
       const sa = localStorage.getItem("schedule-assignments");
       if (sa) setScheduleAssignments(JSON.parse(sa));
     };
-    window.addEventListener("storage", handleStorage);
+    window.addEventListener("storage", handleStorage); window.addEventListener("schedule-updated", (e) => { if (e.detail) setScheduleAssignments(e.detail); });
     return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
@@ -1387,9 +1387,9 @@ export default function ProgramUI(props: any) {
 
   const weekdayOrder = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
   const activeWeekday = weekdayOrder[activeDay];
-  const day = DAYS.find(d => (scheduleAssignments["lift-" + d.id] || ["Monday","Tuesday","Thursday","Saturday"][d.id-1]) === activeWeekday) || DAYS[activeDay];
-  const activeDayWeekday = scheduleAssignments["lift-" + day.id] || ["Monday","Tuesday","Thursday","Saturday"][day.id-1];
-  const dayLog = sessionLogs[`w${CURRENT_WEEK}-d${day.id}`];
+  const day = DAYS.find(d => (scheduleAssignments["lift-" + d.id] || ["Monday","Tuesday","Thursday","Saturday"][d.id-1]) === activeWeekday);
+  const activeDayWeekday = day ? (scheduleAssignments["lift-" + day.id] || ["Monday","Tuesday","Thursday","Saturday"][day.id-1]) : activeWeekday;
+  const dayLog = day ? sessionLogs[`w${CURRENT_WEEK}-d${day.id}`] : null;
   const weekLogs = DAYS.map(d => sessionLogs[`w${CURRENT_WEEK}-d${d.id}`]).filter(Boolean);
   const allLogged = weekLogs.length === DAYS.length;
   return (
@@ -1592,7 +1592,7 @@ export default function ProgramUI(props: any) {
                 <button onClick={() => setLogModal(day)} style={{ background: "none", border: "none", color: "#4a8a6a", fontFamily: "'DM Mono',monospace", fontSize: 10, cursor: "pointer", letterSpacing: "0.06em" }}>Edit</button>
               </div>
             )}
-
+            {day && (<>
             {/* Quote */}
             <div style={{ borderLeft: `3px solid ${day.accent}`, paddingLeft: 16, marginBottom: 24 }}>
               <div style={{ fontFamily: "'Syne',sans-serif", fontSize: "clamp(13px,3vw,17px)", fontWeight: 700, color: "#D0D0C8", lineHeight: 1.45, marginBottom: 6, fontStyle: "italic" }}>
@@ -1612,7 +1612,7 @@ export default function ProgramUI(props: any) {
                 {dayLog ? "✓ Logged" : "Log Session"}
               </button>
             </div>
-
+            </>) }
             {/* ── RUN CARD ── */}
             {(() => {
               const weekRuns = NRC_PROGRAM[CURRENT_WEEK]?.runs || [];
