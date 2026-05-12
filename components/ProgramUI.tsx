@@ -1594,7 +1594,7 @@ export default function ProgramUI(props: any) {
                 <button onClick={() => setLogModal(day)} style={{ background: "none", border: "none", color: "#4a8a6a", fontFamily: "'DM Mono',monospace", fontSize: 10, cursor: "pointer", letterSpacing: "0.06em" }}>Edit</button>
               </div>
             )}
-
+            {day && (<>
             {/* Quote */}
             <div style={{ borderLeft: `3px solid ${day.accent}`, paddingLeft: 16, marginBottom: 24 }}>
               <div style={{ fontFamily: "'Syne',sans-serif", fontSize: "clamp(13px,3vw,17px)", fontWeight: 700, color: "#D0D0C8", lineHeight: 1.45, marginBottom: 6, fontStyle: "italic" }}>
@@ -1867,6 +1867,7 @@ export default function ProgramUI(props: any) {
             <div style={{ marginTop: 16, padding: "10px 16px", background: "#0d0d0d", border: "1px solid #1a1a1a", fontSize: 11, color: "#444", letterSpacing: "0.04em" }}>
               Mobility inspired by Steph Rose / Phase SiX — <span style={{ color: "#555" }}>phase6online.com</span>
             </div>
+            </>) }
           </>
         )}
       </div>
