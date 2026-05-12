@@ -1277,6 +1277,7 @@ export default function ProgramUI(props: any) {
   const [openSets, setOpenSets] = useState({});
   const [showWarmup, setShowWarmup] = useState(false);
   const [view, setView] = useState("program"); // program | log
+  const [scheduleAssignments, setScheduleAssignments] = useState({});
   const [logModal, setLogModal] = useState(null);
   const [sessionLogs, setSessionLogs] = useState({});
   const [logSaved, setLogSaved] = useState(false);
@@ -1316,6 +1317,8 @@ export default function ProgramUI(props: any) {
         const u = localStorage.getItem("weight-unit");
         if (u) setUnit(u);
         const rl = localStorage.getItem("run-logs");
+        const sa = localStorage.getItem("schedule-assignments");
+        if (sa) setScheduleAssignments(JSON.parse(sa));
         if (rl) setRunLogs(JSON.parse(rl));
       } catch (e) {}
     }
@@ -1560,7 +1563,7 @@ export default function ProgramUI(props: any) {
             {/* Day title + log button */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 16 }}>
               <div>
-                <span style={{ fontSize: 10, color: "#555", letterSpacing: "0.15em", textTransform: "uppercase" }}>{day.label} · Week {CURRENT_WEEK}</span>
+                <span style={{ fontSize: 10, color: "#555", letterSpacing: "0.15em", textTransform: "uppercase" }}>{day.label} · {scheduleAssignments["lift-" + day.id] || ["Monday","Tuesday","Thursday","Saturday"][day.id-1]} · Week {CURRENT_WEEK}</span>
                 <h2 style={{ fontFamily: "'Syne',sans-serif", fontSize: 22, fontWeight: 700, color: day.accent, marginTop: 2 }}>{day.title}</h2>
               </div>
               <button className="log-btn" onClick={() => setLogModal(day)}
