@@ -1354,10 +1354,16 @@ export default function ProgramUI(props: any) {
 
   const toggleSet = (key) => setOpenSets(prev => ({ ...prev, [key]: !prev[key] }));
 
-  const day = DAYS[activeDay];
+  const day = orderedDays[activeDay];
   const dayLog = sessionLogs[`w${CURRENT_WEEK}-d${day.id}`];
   const weekLogs = DAYS.map(d => sessionLogs[`w${CURRENT_WEEK}-d${d.id}`]).filter(Boolean);
   const allLogged = weekLogs.length === DAYS.length;
+  const dayOrder = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+  const orderedDays = [...DAYS].sort((a, b) => {
+    const aDay = scheduleAssignments["lift-" + a.id] || ["Monday","Tuesday","Thursday","Saturday"][a.id-1];
+    const bDay = scheduleAssignments["lift-" + b.id] || ["Monday","Tuesday","Thursday","Saturday"][b.id-1];
+    return dayOrder.indexOf(aDay) - dayOrder.indexOf(bDay);
+  });
 
   return (
     <div style={{ fontFamily: "'DM Mono','Courier New',monospace", background: "#0F0F0F", minHeight: "100vh", color: "#E8E8E0" }}>
@@ -1422,7 +1428,7 @@ export default function ProgramUI(props: any) {
 
           {(view === "program" || view === "coach") && (
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap", paddingBottom: 0 }}>
-              {DAYS.map((d, i) => {
+              {orderedDays.map((d, i) => {
                 const logged = !!sessionLogs[`w${CURRENT_WEEK}-d${d.id}`];
                 return (
                   <button key={d.id} className={`day-tab${activeDay === i ? " active" : ""}${logged ? " logged" : ""}`}
