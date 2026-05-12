@@ -1583,7 +1583,7 @@ export default function ProgramUI(props: any) {
               <div style={{ textAlign: "center", padding: "60px 20px" }}>
                 <div style={{ fontSize: 40, marginBottom: 16 }}>🛡️</div>
                 <div style={{ fontFamily: "Syne,sans-serif", fontSize: 22, fontWeight: 700, color: "#E8E8E0", marginBottom: 12 }}>Recovery Day</div>
-                <div style={{ fontSize: 13, color: "#555", lineHeight: 1.8, maxWidth: 320, margin: "0 auto" }}>Rest is where the adaptation happens. No workouts are scheduled today — protect it like a training day.</div>
+                <div style={{ fontSize: 13, color: "#555", lineHeight: 1.8, maxWidth: 320, margin: "0 auto" }}>Rest is where the adaptation happens. No workouts are scheduled today - protect it like a training day.</div>
               </div>
             )}
             {/* Logged badge */}
