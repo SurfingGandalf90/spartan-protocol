@@ -1615,9 +1615,11 @@ export default function ProgramUI(props: any) {
               </button>
             </div>
 
+            </>) }
             {/* ── RUN CARD ── */}
             {(() => {
               const weekRuns = NRC_PROGRAM[CURRENT_WEEK]?.runs || [];
+              console.log("activeDayWeekday:", activeDayWeekday, "activeWeekday:", activeWeekday);
               const todayRuns = weekRuns.filter(r => r.day === ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][new Date().getDay()]);
               // Show run card on lift days that also have a run (Mon/Tue/Thu) or always show based on active day mapping
               const run = weekRuns.find(r => (scheduleAssignments["run-" + r.runNum] || r.day) === activeDayWeekday);
