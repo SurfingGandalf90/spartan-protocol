@@ -172,7 +172,6 @@ export default function WifeUI({ sessionLogs, onSaveLog, user }: any) {
                 const defaultDays = ["Monday","Wednesday","Friday"]
                 if (!d && !defaultDays.includes(weekday)) return null
                 const logged = d ? !!logs["wife-w" + WEEK + "-d" + d.id] : false
-                const logged = logs['wife-w' + WEEK + '-d' + d.id]
                 return (
                   <button key={weekday} onClick={() => setActiveDay(i)} style={{
                     flex: 1, padding: '10px 4px', border: '1px solid ' + (activeDay === i ? accent : '#2a2a2a'),
