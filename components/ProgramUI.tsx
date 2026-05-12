@@ -1451,7 +1451,6 @@ export default function ProgramUI(props: any) {
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap", paddingBottom: 0 }}>
               { ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"].map((weekday, i) => {
                 const d = DAYS.find(d => (scheduleAssignments["lift-" + d.id] || ["Monday","Tuesday","Thursday","Saturday"][d.id-1]) === weekday); const weekRuns = NRC_PROGRAM[CURRENT_WEEK]?.runs || []; const hasRun = weekRuns.some(r => (scheduleAssignments["run-" + r.runNum] || r.day) === weekday); if (!d && !hasRun) return null;
-                if (!d) return null;
                 const logged = !!sessionLogs[`w${CURRENT_WEEK}-d${d.id}`];
                 return (
                   <button key={d.id} className={`day-tab${activeDay === i ? " active" : ""}${logged ? " logged" : ""}`}
