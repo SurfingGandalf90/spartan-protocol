@@ -1385,7 +1385,8 @@ export default function ProgramUI(props: any) {
     const bDay = scheduleAssignments["lift-" + b.id] || ["Monday","Tuesday","Thursday","Saturday"][b.id-1];
     return dayOrder.indexOf(aDay) - dayOrder.indexOf(bDay);
   });
-  const day = orderedDays[activeDay];
+  const day = DAYS[activeDay];
+  const activeDayWeekday = scheduleAssignments["lift-" + day.id] || ["Monday","Tuesday","Thursday","Saturday"][day.id-1];
   const dayLog = sessionLogs[`w${CURRENT_WEEK}-d${day.id}`];
   const weekLogs = DAYS.map(d => sessionLogs[`w${CURRENT_WEEK}-d${d.id}`]).filter(Boolean);
   const allLogged = weekLogs.length === DAYS.length;
@@ -1452,7 +1453,7 @@ export default function ProgramUI(props: any) {
 
           {(view === "program" || view === "coach") && (
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap", paddingBottom: 0 }}>
-              {orderedDays.map((d, i) => {
+              {DAYS.map((d, i) => {
                 const logged = !!sessionLogs[`w${CURRENT_WEEK}-d${d.id}`];
                 return (
                   <button key={d.id} className={`day-tab${activeDay === i ? " active" : ""}${logged ? " logged" : ""}`}
@@ -1607,9 +1608,9 @@ export default function ProgramUI(props: any) {
               const weekRuns = NRC_PROGRAM[CURRENT_WEEK]?.runs || [];
               const todayRuns = weekRuns.filter(r => r.day === ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][new Date().getDay()]);
               // Show run card on lift days that also have a run (Mon/Tue/Thu) or always show based on active day mapping
-              const dayRunMap = { 1: scheduleAssignments["run-1"] || "Monday", 2: scheduleAssignments["run-2"] || "Tuesday", 3: scheduleAssignments["run-3"] || "Thursday", 4: null };
-              const runDay = dayRunMap[day.id];
-              const run = runDay ? weekRuns.find(r => r.day === runDay) : null;
+              const run = weekRuns.find(r => (scheduleAssignments["run-" + r.runNum] || r.day) === activeDayWeekday);
+
+
               if (!run) return null;
               const runKey = `w${CURRENT_WEEK}-run${run.runNum}`;
               const runStatus = runLogs[runKey];
