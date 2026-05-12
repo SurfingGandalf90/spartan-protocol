@@ -1400,7 +1400,7 @@ export default function ProgramUI(props: any) {
         * { box-sizing: border-box; margin: 0; padding: 0; }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
-        .day-tab { cursor:pointer; padding:10px 14px; border:1px solid #2a2a2a; background:transparent; color:#555; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.1em; transition:all 0.2s; text-transform:uppercase; position:relative; }
+        .day-tab { cursor:pointer; padding:14px 10px; border:1px solid #2a2a2a; background:transparent; color:#555; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.1em; transition:all 0.2s; text-transform:uppercase; position:relative; }
         .day-tab:hover { border-color:#444; color:#aaa; }
         .day-tab.active { background:var(--accent); border-color:var(--accent); color:#0F0F0F; font-weight:500; }
         .day-tab.logged::after { content:''; position:absolute; top:3px; right:3px; width:5px; height:5px; border-radius:50%; background:#6EC6A0; }
@@ -1412,7 +1412,7 @@ export default function ProgramUI(props: any) {
         .toggle-btn { background:transparent; border:1px solid #333; color:#888; font-family:'DM Mono',monospace; font-size:11px; padding:6px 14px; cursor:pointer; letter-spacing:0.05em; transition:all 0.2s; }
         .toggle-btn:hover { border-color:#666; color:#ccc; }
         .rule-chip { display:inline-flex; align-items:center; gap:6px; background:#1a1a1a; border:1px solid #2a2a2a; border-radius:2px; padding:6px 12px; font-size:11px; color:#888; letter-spacing:0.04em; }
-        .nav-tab { background:transparent; border:none; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; padding:6px 0; border-bottom:1px solid transparent; transition:all 0.2s; }
+        .nav-tab { background:transparent; border:none; font-family:'DM Mono',monospace; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; padding:10px 0; border-bottom:2px solid transparent; transition:all 0.2s; }
         .log-btn { font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; padding:10px 18px; cursor:pointer; transition:all 0.2s; border:none; }
         .timer-block { background:#161616; border:1px solid #222; padding:12px 18px; font-size:11px; color:#666; letter-spacing:0.08em; text-transform:uppercase; display:flex; gap:24px; flex-wrap:wrap; }
       `}</style>
@@ -1613,7 +1613,7 @@ export default function ProgramUI(props: any) {
                 {dayLog ? "✓ Logged" : "Log Session"}
               </button>
             </div>
-            </>) }
+
             {/* ── RUN CARD ── */}
             {(() => {
               const weekRuns = NRC_PROGRAM[CURRENT_WEEK]?.runs || [];
