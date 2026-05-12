@@ -9,7 +9,7 @@ const WEEK = WIFE_CURRENT_WEEK
 
 function CoachChat({ day }) {
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: "I'm here. You're on " + day.title + " — Week " + WEEK + ". Ask me about any exercise, form cues, substitutions, or why it's in the program." }
+    { role: 'assistant', content: "I'm here. You're on " + safeDay.title + " — Week " + WEEK + ". Ask me about any exercise, form cues, substitutions, or why it's in the program." }
   ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -25,14 +25,14 @@ function CoachChat({ day }) {
     setMessages(prev => [...prev, userMsg, { role: 'assistant', content: '...' }])
     setLoading(true)
     try {
-      const exerciseContext = day.supersets.flatMap(ss => ss.exercises).map(ex => ex.name + ': ' + ex.note).join('\n')
+      const exerciseContext = safeDay.supersets.flatMap(ss => ss.exercises).map(ex => ex.name + ': ' + ex.note).join('\n')
       const res = await fetch('/api/coach', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: 'claude-sonnet-4-5',
           max_tokens: 1000,
-          system: "You are a back-safe strength coach for Spartan Protocol. The athlete is Kimberly. Her program is a 3-day full body circuit — back-safe, no spinal flexion under load, no axial compression, all rows chest-supported. Today is " + day.title + " (Week " + WEEK + "). Exercises today:\n" + exerciseContext + "\nKeep answers concise and practical.",
+          system: "You are a back-safe strength coach for Spartan Protocol. The athlete is Kimberly. Her program is a 3-day full body circuit — back-safe, no spinal flexion under load, no axial compression, all rows chest-supported. Today is " + safeDay.title + " (Week " + WEEK + "). Exercises today:\n" + exerciseContext + "\nKeep answers concise and practical.",
           messages: [...messages, userMsg].filter(m => m.content !== '...').map(m => ({ role: m.role, content: m.content }))
         })
       })
@@ -47,7 +47,7 @@ function CoachChat({ day }) {
   }
 
   const handleKey = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }
-  const allExercises = day.supersets.flatMap(ss => ss.exercises)
+  const allExercises = safeDay.supersets.flatMap(ss => ss.exercises)
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 220px)', minHeight: 360 }}>
@@ -116,11 +116,26 @@ function CoachChat({ day }) {
 
 export default function WifeUI({ sessionLogs, onSaveLog, user }: any) {
   const [activeDay, setActiveDay] = useState(0)
+  const [scheduleAssignments, setScheduleAssignments] = useState({})
+
+  useEffect(() => {
+    const sa = localStorage.getItem("schedule-assignments")
+    if (sa) setScheduleAssignments(JSON.parse(sa))
+    const handleSchedule = (e) => { if (e.detail) { setScheduleAssignments(e.detail); return; } const s = localStorage.getItem("schedule-assignments"); if (s) setScheduleAssignments(JSON.parse(s)); }
+    window.addEventListener("schedule-updated", handleSchedule)
+    window.addEventListener("storage", handleSchedule)
+    return () => { window.removeEventListener("schedule-updated", handleSchedule); window.removeEventListener("storage", handleSchedule); }
+  }, [])
   const [view, setView] = useState('program')
   const [logs, setLogs] = useState(sessionLogs || {})
   const [logModal, setLogModal] = useState(null)
 
-  const day = WIFE_DAYS[activeDay]
+  const weekdayOrder = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
+  const defaultWifeDays = ["Monday","Wednesday","Friday"]
+  const activeWeekday = weekdayOrder[activeDay]
+  const day = WIFE_DAYS.find(d => (scheduleAssignments["wife-lift-" + d.id] || defaultWifeDays[d.id-1]) === activeWeekday)
+  const isRestDay = !day
+  const safeDay = day || { id: 0, label: activeWeekday, title: "Rest Day", accent, focus: "", duration: "", note: "", supersets: [] }
 
   const handleSave = (entry: any) => {
     const key = 'wife-w' + WEEK + '-d' + entry.dayId
@@ -152,17 +167,21 @@ export default function WifeUI({ sessionLogs, onSaveLog, user }: any) {
           {/* Day tabs */}
           {(view === 'program' || view === 'coach') && (
             <div style={{ display: 'flex', gap: 8, paddingTop: 16 }}>
-              {WIFE_DAYS.map((d: any, i: number) => {
+              { ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"].map((weekday, i) => {
+                const d = WIFE_DAYS.find(d => (scheduleAssignments["wife-lift-" + d.id] || defaultWifeDays[d.id-1]) === weekday)
+                const defaultDays = ["Monday","Wednesday","Friday"]
+                if (!d && !defaultDays.includes(weekday)) return null
+                const logged = d ? !!logs["wife-w" + WEEK + "-d" + d.id] : false
                 const logged = logs['wife-w' + WEEK + '-d' + d.id]
                 return (
-                  <button key={d.id} onClick={() => setActiveDay(i)} style={{
+                  <button key={weekday} onClick={() => setActiveDay(i)} style={{
                     flex: 1, padding: '10px 4px', border: '1px solid ' + (activeDay === i ? accent : '#2a2a2a'),
                     background: activeDay === i ? accent + '18' : '#111',
                     color: activeDay === i ? accent : '#555',
                     fontFamily: "'DM Mono', monospace", fontSize: 10, letterSpacing: '0.08em',
                     textTransform: 'uppercase', cursor: 'pointer', position: 'relative',
                   }}>
-                    {d.label}
+                    {weekday.slice(0,3).toUpperCase()}
                     {logged && <span style={{ position: 'absolute', top: 3, right: 3, width: 5, height: 5, borderRadius: '50%', background: '#6EC6A0' }} />}
                   </button>
                 )
@@ -180,16 +199,16 @@ export default function WifeUI({ sessionLogs, onSaveLog, user }: any) {
           <>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 16 }}>
               <div>
-                <div style={{ fontSize: 10, color: '#555', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 3 }}>{day.focus} · {day.duration}</div>
-                <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 20, fontWeight: 700, color: accent }}>{day.title}</div>
+                <div style={{ fontSize: 10, color: '#555', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 3 }}>{safeDay.focus} · {safeDay.duration}</div>
+                <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 20, fontWeight: 700, color: accent }}>{safeDay.title}</div>
               </div>
-              <button onClick={() => setLogModal(day)} style={{ background: logs['wife-w' + WEEK + '-d' + day.id] ? 'transparent' : accent, color: logs['wife-w' + WEEK + '-d' + day.id] ? '#555' : '#0F0F0F', border: logs['wife-w' + WEEK + '-d' + day.id] ? '1px solid #2a2a2a' : 'none', fontFamily: 'DM Mono,monospace', fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '10px 18px', cursor: 'pointer' }}>
-                {logs['wife-w' + WEEK + '-d' + day.id] ? '✓ Logged' : 'Log Session'}
+              <button onClick={() => setLogModal(day)} style={{ background: logs['wife-w' + WEEK + '-d' + safeDay.id] ? 'transparent' : accent, color: logs['wife-w' + WEEK + '-d' + safeDay.id] ? '#555' : '#0F0F0F', border: logs['wife-w' + WEEK + '-d' + safeDay.id] ? '1px solid #2a2a2a' : 'none', fontFamily: 'DM Mono,monospace', fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '10px 18px', cursor: 'pointer' }}>
+                {logs['wife-w' + WEEK + '-d' + safeDay.id] ? '✓ Logged' : 'Log Session'}
               </button>
             </div>
-            <div style={{ fontSize: 11, color: '#666', lineHeight: 1.6, fontStyle: 'italic', marginBottom: 20 }}>{day.note}</div>
+            <div style={{ fontSize: 11, color: '#666', lineHeight: 1.6, fontStyle: 'italic', marginBottom: 20 }}>{safeDay.note}</div>
 
-            {day.supersets.map((circuit: any) => (
+            {safeDay.supersets.map((circuit: any) => (
               <div key={circuit.id} style={{ border: '1px solid #222', borderLeft: '3px solid ' + accent, background: '#141414', marginBottom: 12 }}>
                 <div style={{ padding: '10px 18px', fontSize: 10, color: accent, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{circuit.name}</div>
                 {circuit.exercises.map((ex: any) => (
@@ -211,9 +230,9 @@ export default function WifeUI({ sessionLogs, onSaveLog, user }: any) {
           <>
             <div style={{ marginBottom: 16 }}>
               <div style={{ fontSize: 10, color: '#555', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 3 }}>Ask Coach · {day.label}</div>
-              <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 18, fontWeight: 700, color: accent }}>{day.title}</div>
+              <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 18, fontWeight: 700, color: accent }}>{safeDay.title}</div>
             </div>
-            <CoachChat key={'coach-' + day.id} day={day} />
+            <CoachChat key={'coach-' + safeDay.id} day={day} />
           </>
         )}
 
