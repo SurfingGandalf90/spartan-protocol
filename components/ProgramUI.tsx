@@ -1387,8 +1387,8 @@ export default function ProgramUI(props: any) {
 
   const weekdayOrder = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
   const activeWeekday = weekdayOrder[activeDay];
-  const day = DAYS.find(d => (scheduleAssignments["lift-" + d.id] || ["Monday","Tuesday","Thursday","Saturday"][d.id-1]) === activeWeekday);
-  const activeDayWeekday = day ? (scheduleAssignments["lift-" + day.id] || ["Monday","Tuesday","Thursday","Saturday"][day.id-1]) : activeWeekday;
+  const day = DAYS.find(d => (scheduleAssignments["lift-" + d.id] || ["Monday","Tuesday","Thursday","Saturday"][d.id-1]) === activeWeekday) || { id: 0, label: activeWeekday, title: "Rest Day", accent: "#444", quote: "Rest is where adaptation happens.", quoteAuthor: "Science", supersets: [], tips: [], preview: "No lift scheduled today.", warmup: [] };
+  const isRestDay = !DAYS.find(d => (scheduleAssignments["lift-" + d.id] || ["Monday","Tuesday","Thursday","Saturday"][d.id-1]) === activeWeekday);
   const dayLog = day ? sessionLogs[`w${CURRENT_WEEK}-d${day.id}`] : null;
   const weekLogs = DAYS.map(d => sessionLogs[`w${CURRENT_WEEK}-d${d.id}`]).filter(Boolean);
   const allLogged = weekLogs.length === DAYS.length;
@@ -1578,7 +1578,7 @@ export default function ProgramUI(props: any) {
         {/* ── PROGRAM VIEW ── */}
         {view === "program" && (
           <>
-            {!day && (() => { const wr = NRC_PROGRAM[CURRENT_WEEK]?.runs || []; return !wr.some(r => (scheduleAssignments["run-" + r.runNum] || r.day) === activeWeekday); })() && (
+            {isRestDay && (() => { const wr = NRC_PROGRAM[CURRENT_WEEK]?.runs || []; return !wr.some(r => (scheduleAssignments["run-" + r.runNum] || r.day) === activeWeekday); })() && (
               <div style={{ textAlign: "center", padding: "60px 20px" }}>
                 <div style={{ fontSize: 40, marginBottom: 16 }}>🛡️</div>
                 <div style={{ fontFamily: "Syne,sans-serif", fontSize: 22, fontWeight: 700, color: "#E8E8E0", marginBottom: 12 }}>Recovery Day</div>
