@@ -747,6 +747,7 @@ function CoachChat({ day }) {
         })
       });
       const data = await res.json();
+      console.log("coach response:", data);
       const reply = data.content || "Something went wrong — try again.";
       setMessages(prev => [...prev.slice(0, -1), { role: "assistant", content: reply }]);
     } catch (e) {
