@@ -1407,8 +1407,8 @@ export default function ProgramUI(props: any) {
         * { box-sizing: border-box; margin: 0; padding: 0; }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
-        .day-tab { cursor:pointer; padding:14px 10px; border:1px solid #2a2a2a; background:transparent; color:#555; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.1em; transition:all 0.2s; text-transform:uppercase; position:relative; }
-        .day-tab:hover { border-color:#444; color:#aaa; }
+        .day-tab { cursor:pointer; padding:14px 10px; border:1px solid #444; background:transparent; color:#999; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.1em; transition:all 0.2s; text-transform:uppercase; position:relative; }
+        .day-tab:hover { border-color:#666; color:#ccc; }
         .day-tab.active { background:var(--accent); border-color:var(--accent); color:#0F0F0F; font-weight:500; }
         .day-tab.logged::after { content:''; position:absolute; top:3px; right:3px; width:5px; height:5px; border-radius:50%; background:#6EC6A0; }
         .blink { animation: blink 1s step-end infinite; } @keyframes blink { 50% { opacity: 0; } } .superset-card { border:1px solid #222; border-left:3px solid var(--accent); background:#141414; margin-bottom:12px; }
@@ -1438,17 +1438,17 @@ export default function ProgramUI(props: any) {
               </div>
             </div>
             <div style={{ display: "flex", gap: 18, paddingTop: 4 }}>
-              <button className="nav-tab" style={{ color: view === "program" ? "#E8E8E0" : "#444", borderBottomColor: view === "program" ? "#666" : "transparent" }} onClick={() => setView("program")}>Program</button>
-              <button className="nav-tab" style={{ color: view === "log" ? "#E8E8E0" : "#444", borderBottomColor: view === "log" ? "#666" : "transparent" }} onClick={() => setView("log")}>
+              <button className="nav-tab" style={{ color: view === "program" ? "#E8E8E0" : "#999", borderBottomColor: view === "program" ? "#666" : "transparent" }} onClick={() => setView("program")}>Program</button>
+              <button className="nav-tab" style={{ color: view === "log" ? "#E8E8E0" : "#999", borderBottomColor: view === "log" ? "#666" : "transparent" }} onClick={() => setView("log")}>
                 Log {weekLogs.length > 0 && <span style={{ color: "#6EC6A0" }}>({weekLogs.length}/4)</span>}
               </button>
-              <button className="nav-tab" style={{ color: view === "coach" ? "#E8E8E0" : "#444", borderBottomColor: view === "coach" ? day?.accent || "#E8C547" : "transparent" }} onClick={() => setView("coach")}>
+              <button className="nav-tab" style={{ color: view === "coach" ? "#E8E8E0" : "#999", borderBottomColor: view === "coach" ? day?.accent || "#E8C547" : "transparent" }} onClick={() => setView("coach")}>
                 Coach
               </button>
-              <button className="nav-tab" style={{ color: view === "neuro" ? "#E8E8E0" : "#444", borderBottomColor: view === "neuro" ? "#A78BFA" : "transparent" }} onClick={() => setView("neuro")}>
+              <button className="nav-tab" style={{ color: view === "neuro" ? "#E8E8E0" : "#999", borderBottomColor: view === "neuro" ? "#A78BFA" : "transparent" }} onClick={() => setView("neuro")}>
                 Neuro
               </button>
-              <button className="nav-tab" style={{ color: view === "schedule" ? "#E8E8E0" : "#444", borderBottomColor: view === "schedule" ? "#6EC6A0" : "transparent" }} onClick={() => setView("schedule")}>
+              <button className="nav-tab" style={{ color: view === "schedule" ? "#E8E8E0" : "#999", borderBottomColor: view === "schedule" ? "#6EC6A0" : "transparent" }} onClick={() => setView("schedule")}>
                 Schedule
               </button>
             </div>
