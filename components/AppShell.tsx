@@ -74,7 +74,7 @@ function ProfileSelector({ user, onSelect }: { user: User; onSelect: (p: string)
             <div style={{ fontSize: 11, color: '#555', letterSpacing: '0.04em' }}>{p.subtitle}</div>
           </button>
         ))}
-        <button onClick={() => supabase.auth.signOut()} style={{ background: 'transparent', border: '1px solid #1e1e1e', color: '#444', fontFamily: "'DM Mono', monospace", fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '10px', cursor: 'pointer', marginTop: 8 }}>Sign out</button>
+        <button onClick={() => supabase.auth.signOut().then(() => localStorage.removeItem("spartan-profile"))} style={{ background: 'transparent', border: '1px solid #1e1e1e', color: '#444', fontFamily: "'DM Mono', monospace", fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '10px', cursor: 'pointer', marginTop: 8 }}>Sign out</button>
       </div>
     </div>
   )
@@ -83,7 +83,7 @@ function ProfileSelector({ user, onSelect }: { user: User; onSelect: (p: string)
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
-  const [profile, setProfile] = useState<string | null>(null)
+  const [profile, setProfile] = useState<string | null>(() => localStorage.getItem("spartan-profile"))
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -98,7 +98,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   if (loading) return <div style={{ minHeight: '100vh', background: '#0F0F0F', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><SpartanLogo size={36} /></div>
   if (!session?.user) return <LoginScreen />
-  if (!profile) return <ProfileSelector user={session.user} onSelect={setProfile} />
+  if (!profile) return <ProfileSelector user={session.user} onSelect={(p) => { localStorage.setItem("spartan-profile", p); setProfile(p); }} />
 
   return (
     <AuthContext.Provider value={{ user: session.user, session, profile }}>
