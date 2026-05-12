@@ -1579,7 +1579,7 @@ export default function ProgramUI(props: any) {
         {/* ── PROGRAM VIEW ── */}
         {view === "program" && (
           <>
-            {isRestDay && (() => { const wr = NRC_PROGRAM[CURRENT_WEEK]?.runs || []; return !wr.some(r => (scheduleAssignments["run-" + r.runNum] || r.day) === activeWeekday); })() && (
+            {isRestDay && (
               <div style={{ textAlign: "center", padding: "60px 20px" }}>
                 <div style={{ fontSize: 40, marginBottom: 16 }}>🛡️</div>
                 <div style={{ fontFamily: "Syne,sans-serif", fontSize: 22, fontWeight: 700, color: "#E8E8E0", marginBottom: 12 }}>Recovery Day</div>
