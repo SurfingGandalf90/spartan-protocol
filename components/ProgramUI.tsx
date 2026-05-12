@@ -1378,7 +1378,7 @@ export default function ProgramUI(props: any) {
 
   const toggleSet = (key) => setOpenSets(prev => ({ ...prev, [key]: !prev[key] }));
 
-  const day = orderedDays[activeDay];
+  const day = DAYS[activeDay];
   const dayLog = sessionLogs[`w${CURRENT_WEEK}-d${day.id}`];
   const weekLogs = DAYS.map(d => sessionLogs[`w${CURRENT_WEEK}-d${d.id}`]).filter(Boolean);
   const allLogged = weekLogs.length === DAYS.length;
@@ -1388,7 +1388,7 @@ export default function ProgramUI(props: any) {
     const bDay = scheduleAssignments["lift-" + b.id] || ["Monday","Tuesday","Thursday","Saturday"][b.id-1];
     return dayOrder.indexOf(aDay) - dayOrder.indexOf(bDay);
   });
-
+  const activeOrderedDay = orderedDays[activeDay];
   return (
     <div style={{ fontFamily: "'DM Mono','Courier New',monospace", background: "#0F0F0F", minHeight: "100vh", color: "#E8E8E0" }}>
       <style>{`
