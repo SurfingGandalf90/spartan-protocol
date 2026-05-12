@@ -1434,7 +1434,7 @@ export default function ProgramUI(props: any) {
               <button className="nav-tab" style={{ color: view === "log" ? "#E8E8E0" : "#444", borderBottomColor: view === "log" ? "#666" : "transparent" }} onClick={() => setView("log")}>
                 Log {weekLogs.length > 0 && <span style={{ color: "#6EC6A0" }}>({weekLogs.length}/4)</span>}
               </button>
-              <button className="nav-tab" style={{ color: view === "coach" ? "#E8E8E0" : "#444", borderBottomColor: view === "coach" ? day.accent : "transparent" }} onClick={() => setView("coach")}>
+              <button className="nav-tab" style={{ color: view === "coach" ? "#E8E8E0" : "#444", borderBottomColor: view === "coach" ? day?.accent || "#E8C547" : "transparent" }} onClick={() => setView("coach")}>
                 Coach
               </button>
               <button className="nav-tab" style={{ color: view === "neuro" ? "#E8E8E0" : "#444", borderBottomColor: view === "neuro" ? "#A78BFA" : "transparent" }} onClick={() => setView("neuro")}>
@@ -1488,14 +1488,14 @@ export default function ProgramUI(props: any) {
           <>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 16 }}>
               <div>
-                <div style={{ fontSize: 10, color: "#555", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 3 }}>Ask Coach · {day.label}</div>
-                <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 18, fontWeight: 700, color: day.accent }}>{day.title}</div>
+                <div style={{ fontSize: 10, color: "#555", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 3 }}>Ask Coach · {day?.label}</div>
+                <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 18, fontWeight: 700, color: day?.accent }}>{day?.title}</div>
               </div>
               <div style={{ fontSize: 10, color: "#3a3a3a", letterSpacing: "0.06em", textAlign: "right" }}>
                 Context-aware<br />back-safe only
               </div>
             </div>
-            <CoachChat key={`coach-${day.id}`} day={day} />
+            <CoachChat key={`coach-${day?.id}`} day={day || DAYS[0]} />
           </>
         )}
 
