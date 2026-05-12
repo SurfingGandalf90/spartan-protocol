@@ -1857,12 +1857,14 @@ export default function ProgramUI(props: any) {
               <div style={{ marginTop: 20, padding: "14px 18px", background: "#111", border: "1px solid #1e1e1e", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
                 <span style={{ fontSize: 11, color: "#555", letterSpacing: "0.05em" }}>Done with this session?</span>
                 <button className="log-btn" onClick={() => setLogModal(day)}
-                  style={{ background: day.accent, color: "#0F0F0F", border: "none", fontWeight: 500 }}>
+            {!isRestDay && <button className="log-btn" onClick={() => setLogModal(day)} style={{ background: day.accent, color: "#0F0F0F", border: "none", fontWeight: 500 }}>Log It →</button>}
                   Log It →
                 </button>
               </div>
             )}
+            </>) }
 
+            <div style={{ marginTop: 16, padding: "10px 16px", background: "#0d0d0d", border: "1px solid #1a1a1a", fontSize: 11, color: "#444", letterSpacing: "0.04em" }}>
             <div style={{ marginTop: 16, padding: "10px 16px", background: "#0d0d0d", border: "1px solid #1a1a1a", fontSize: 11, color: "#444", letterSpacing: "0.04em" }}>
               Mobility inspired by Steph Rose / Phase SiX — <span style={{ color: "#555" }}>phase6online.com</span>
             </div>
