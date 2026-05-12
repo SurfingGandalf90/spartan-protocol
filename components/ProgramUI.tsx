@@ -725,13 +725,37 @@ function CoachChat({ day }) {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const send = () => {
+  const [loading, setLoading] = useState(false);
+
+  const send = async () => {
     const text = input.trim();
     if (!text) return;
     setInput("");
     const userMsg = { role: "user", content: text };
-    const reply = getCoachResponse(text, day);
-    setMessages(prev => [...prev, userMsg, { role: "assistant", content: reply }]);
+    setMessages(prev => [...prev, userMsg, { role: "assistant", content: "..." }]);
+    setLoading(true);
+    try {
+      const exerciseContext = day.supersets.flatMap(ss => ss.exercises).map(ex => ex.name + ": " + ex.note).join("\n");
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-5",
+          max_tokens: 1000,
+          system: "You are a back-safe strength coach for Spartan Protocol. The athlete has a disc injury history. Today is " + day.title + " (Week " + CURRENT_WEEK + "). Exercises today: " + exerciseContext + ". Keep answers concise, practical, and always back-safe. Never recommend spinal flexion under load or axial compression.",
+          messages: [...messages, userMsg].map(m => ({ role: m.role, content: m.content }))
+        })
+      });
+      const data = await res.json();
+      const reply = data.content?.[0]?.text || "Something went wrong — try again.";
+      setMessages(prev => [...prev.slice(0, -1), { role: "assistant", content: reply }]);
+    } catch (e) {
+      setMessages(prev => [...prev.slice(0, -1), { role: "assistant", content: "Connection error — check your internet and try again." }]);
+    } finally {
+      setLoading(false);
+    }
+
+
   };
 
   const handleKey = (e) => {
@@ -753,7 +777,7 @@ function CoachChat({ day }) {
                 const q = "How do I cue " + ex.name + "?";
                 setMessages(prev => [...prev,
                   { role: "user", content: q },
-                  { role: "assistant", content: getCoachResponse(q, day) }
+                  { role: "assistant", content: "..." }
                 ]);
               }} style={{
                 background: "#111", border: "1px solid #2a2a2a", color: "#777",
@@ -768,7 +792,7 @@ function CoachChat({ day }) {
               <button key={i} onClick={() => {
                 setMessages(prev => [...prev,
                   { role: "user", content: q },
-                  { role: "assistant", content: getCoachResponse(q, day) }
+                  { role: "assistant", content: "..." }
                 ]);
               }} style={{
                 textAlign: "left", background: "#0d0d0d", border: "1px solid #1e1e1e",
@@ -808,11 +832,11 @@ function CoachChat({ day }) {
             resize: "none", letterSpacing: "0.02em", lineHeight: 1.5, outline: "none" }}
           onFocus={e => e.target.style.borderColor = day.accent}
           onBlur={e => e.target.style.borderColor = "#2a2a2a"} />
-        <button onClick={send} disabled={!input.trim()} style={{
-          background: !input.trim() ? "#1a1a1a" : day.accent,
-          color: !input.trim() ? "#444" : "#0F0F0F",
+        <button onClick={send} disabled={!input.trim() || loading} style={{
+          background: !input.trim() || loading ? "#1a1a1a" : day.accent,
+          color: !input.trim() || loading ? "#444" : "#0F0F0F",
           border: "none", width: 48, fontSize: 20,
-          cursor: !input.trim() ? "not-allowed" : "pointer", flexShrink: 0,
+          cursor: !input.trim() || loading ? "not-allowed" : "pointer", flexShrink: 0,
         }}>↑</button>
       </div>
     </div>
