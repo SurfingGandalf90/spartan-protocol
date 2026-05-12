@@ -1075,7 +1075,7 @@ function ScheduleView() {
 
   const saveAssignments = (next) => {
     setAssignments(next);
-    try { localStorage.setItem("schedule-assignments", JSON.stringify(next)); } catch {}
+    try { localStorage.setItem("schedule-assignments", JSON.stringify(next)); window.dispatchEvent(new CustomEvent("schedule-updated", { detail: next })); } catch {}
   };
 
   const getDay = (key, def) => assignments[key] || def;
@@ -1348,12 +1348,14 @@ export default function ProgramUI(props: any) {
       } catch (e) {}
     }
     load();
-    const handleStorage = () => {
+    const handleStorage = (e) => {
+      if (e.detail) { setScheduleAssignments(e.detail); return; }
       const sa = localStorage.getItem("schedule-assignments");
       if (sa) setScheduleAssignments(JSON.parse(sa));
     };
     window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
+    window.addEventListener("schedule-updated", handleStorage);
+    return () => { window.removeEventListener("storage", handleStorage); window.removeEventListener("schedule-updated", handleStorage); };
   }, []);
 
   const saveUnit = (u) => {
@@ -1387,9 +1389,9 @@ export default function ProgramUI(props: any) {
 
   const weekdayOrder = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
   const activeWeekday = weekdayOrder[activeDay];
-  const day = DAYS.find(d => (scheduleAssignments["lift-" + d.id] || ["Monday","Tuesday","Thursday","Saturday"][d.id-1]) === activeWeekday) || DAYS[activeDay];
-  const activeDayWeekday = scheduleAssignments["lift-" + day.id] || ["Monday","Tuesday","Thursday","Saturday"][day.id-1];
-  const dayLog = sessionLogs[`w${CURRENT_WEEK}-d${day.id}`];
+  const day = DAYS.find(d => (scheduleAssignments["lift-" + d.id] || ["Monday","Tuesday","Thursday","Saturday"][d.id-1]) === activeWeekday);
+  const activeDayWeekday = day ? (scheduleAssignments["lift-" + day.id] || ["Monday","Tuesday","Thursday","Saturday"][day.id-1]) : activeWeekday;
+  const dayLog = day ? sessionLogs[`w${CURRENT_WEEK}-d${day.id}`] : null;
   const weekLogs = DAYS.map(d => sessionLogs[`w${CURRENT_WEEK}-d${d.id}`]).filter(Boolean);
   const allLogged = weekLogs.length === DAYS.length;
   return (
