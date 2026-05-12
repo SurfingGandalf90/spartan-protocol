@@ -1455,7 +1455,6 @@ export default function ProgramUI(props: any) {
                 return (
                   <button key={weekday} className={`day-tab${activeDay === i ? " active" : ""}${logged ? " logged" : ""}`}
                     style={{ "--accent": d?.accent || "#6EC6A0" }} onClick={() => { setActiveDay(i); setShowWarmup(false); }}>
-                    style={{ "--accent": d.accent }} onClick={() => { setActiveDay(i); setShowWarmup(false); }}>
                     {weekday.slice(0,3).toUpperCase()}
                   </button>
                 );
