@@ -1389,6 +1389,7 @@ export default function ProgramUI(props: any) {
   const activeWeekday = weekdayOrder[activeDay];
   const day = DAYS.find(d => (scheduleAssignments["lift-" + d.id] || ["Monday","Tuesday","Thursday","Saturday"][d.id-1]) === activeWeekday) || { id: 0, label: activeWeekday, title: "Rest Day", accent: "#444", quote: "Rest is where adaptation happens.", quoteAuthor: "Science", supersets: [], tips: [], preview: "No lift scheduled today.", warmup: [] };
   const isRestDay = !DAYS.find(d => (scheduleAssignments["lift-" + d.id] || ["Monday","Tuesday","Thursday","Saturday"][d.id-1]) === activeWeekday);
+  const activeDayWeekday = isRestDay ? activeWeekday : (scheduleAssignments["lift-" + day.id] || ["Monday","Tuesday","Thursday","Saturday"][day.id-1]);
   const dayLog = day ? sessionLogs[`w${CURRENT_WEEK}-d${day.id}`] : null;
   const weekLogs = DAYS.map(d => sessionLogs[`w${CURRENT_WEEK}-d${d.id}`]).filter(Boolean);
   const allLogged = weekLogs.length === DAYS.length;
@@ -1592,7 +1593,7 @@ export default function ProgramUI(props: any) {
                 <button onClick={() => setLogModal(day)} style={{ background: "none", border: "none", color: "#4a8a6a", fontFamily: "'DM Mono',monospace", fontSize: 10, cursor: "pointer", letterSpacing: "0.06em" }}>Edit</button>
               </div>
             )}
-            {day && (<>
+            {!isRestDay && (<>
             {/* Quote */}
             <div style={{ borderLeft: `3px solid ${day.accent}`, paddingLeft: 16, marginBottom: 24 }}>
               <div style={{ fontFamily: "'Syne',sans-serif", fontSize: "clamp(13px,3vw,17px)", fontWeight: 700, color: "#D0D0C8", lineHeight: 1.45, marginBottom: 6, fontStyle: "italic" }}>
