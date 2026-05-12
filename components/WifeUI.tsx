@@ -116,6 +116,7 @@ function CoachChat({ day }) {
 
 export default function WifeUI({ sessionLogs, onSaveLog, user }: any) {
   const [activeDay, setActiveDay] = useState(0)
+  const [wifeMoving, setWifeMoving] = useState(null)
   const [scheduleAssignments, setScheduleAssignments] = useState({})
 
   useEffect(() => {
@@ -267,23 +268,81 @@ export default function WifeUI({ sessionLogs, onSaveLog, user }: any) {
         )}
 
         {/* Schedule view */}
-        {view === 'schedule' && (
-          <div>
-            <div style={{ fontSize: 10, letterSpacing: '0.15em', color: '#444', textTransform: 'uppercase', marginBottom: 16 }}>Weekly Schedule</div>
-            {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(dayName => (
-              <div key={dayName} style={{ border: '1px solid #1e1e1e', background: '#0d0d0d', padding: '14px 18px', marginBottom: 8 }}>
-                <div style={{ fontSize: 11, color: '#555', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>{dayName}</div>
-                {WIFE_DAYS.map((d: any) => {
-                  const defaultDays = { 1: 'Monday', 2: 'Wednesday', 3: 'Friday' }
-                  if (defaultDays[d.id] === dayName) {
-                    return <div key={d.id} style={{ fontSize: 12, color: accent, padding: '4px 0' }}>⚡ {d.title} · {d.duration}</div>
-                  }
-                  return null
-                })}
-              </div>
-            ))}
-          </div>
-        )}
+        {view === 'schedule' && (() => {
+          const allDays = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
+          const defaultWifeLiftDays = { 1: 'Monday', 2: 'Wednesday', 3: 'Friday' }
+          const getAssigned = (key, def) => scheduleAssignments[key] || def
+
+          const buildWifeMap = () => {
+            const map = {}
+            allDays.forEach(d => { map[d] = [] })
+            WIFE_DAYS.forEach((d: any) => {
+              const key = 'wife-lift-' + d.id
+              const day = getAssigned(key, defaultWifeLiftDays[d.id])
+              if (map[day]) map[day].push({ key, label: d.title + ' · ' + d.duration, accent })
+            })
+            return map
+          }
+
+          const wifeMap = buildWifeMap()
+
+          const saveWifeAssignments = (next) => {
+            setScheduleAssignments(next)
+            try {
+              localStorage.setItem('schedule-assignments', JSON.stringify(next))
+              window.dispatchEvent(new CustomEvent('schedule-updated', { detail: next }))
+            } catch {}
+          }
+
+          const handleWifeMove = (targetDay) => {
+            if (!wifeMoving) return
+            saveWifeAssignments({ ...scheduleAssignments, [wifeMoving]: targetDay })
+            setWifeMoving(null)
+          }
+
+          return (
+            <div>
+              {wifeMoving && (
+                <div style={{ padding: '10px 14px', background: '#1a1a2a', border: '1px solid #3a3a6a', marginBottom: 12, fontSize: 11, color: '#A78BFA', letterSpacing: '0.06em', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>Tap a day to move this session</span>
+                  <button onClick={() => setWifeMoving(null)} style={{ background: 'none', border: 'none', color: '#A78BFA', cursor: 'pointer', fontSize: 11 }}>✕ Cancel</button>
+                </div>
+              )}
+              {allDays.map(dayName => (
+                <div key={dayName}
+                  onClick={() => { if (wifeMoving) handleWifeMove(dayName) }}
+                  style={{
+                    border: '1px solid ' + (wifeMoving ? '#2a2a4a' : '#1e1e1e'),
+                    background: wifeMoving ? '#0d0d18' : '#0d0d0d',
+                    padding: '14px 18px', marginBottom: 8,
+                    cursor: wifeMoving ? 'pointer' : 'default',
+                    transition: 'all 0.15s'
+                  }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: wifeMap[dayName].length ? 8 : 0 }}>
+                    <div style={{ fontSize: 11, color: '#888', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{dayName}</div>
+                    {wifeMoving && <span style={{ fontSize: 9, color: '#A78BFA', letterSpacing: '0.06em' }}>tap to drop here</span>}
+                    {!wifeMap[dayName].length && !wifeMoving && <span style={{ fontSize: 10, color: '#2a2a2a' }}>Rest</span>}
+                  </div>
+                  {wifeMap[dayName].map(s => (
+                    <div key={s.key}
+                      onClick={e => { e.stopPropagation(); if (!wifeMoving) setWifeMoving(s.key) }}
+                      style={{
+                        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                        padding: '8px 12px', marginBottom: 4,
+                        background: wifeMoving === s.key ? s.accent + '28' : s.accent + '10',
+                        border: '1px solid ' + (wifeMoving === s.key ? s.accent : s.accent + '30'),
+                        cursor: 'pointer'
+                      }}>
+                      <span style={{ fontSize: 12, color: wifeMoving === s.key ? s.accent : '#ccc' }}>⚡ {s.label}</span>
+                      {!wifeMoving && <span style={{ fontSize: 9, color: '#666', textTransform: 'uppercase', letterSpacing: '0.08em' }}>move</span>}
+                      {wifeMoving === s.key && <span style={{ fontSize: 9, color: s.accent, textTransform: 'uppercase', letterSpacing: '0.08em' }}>moving...</span>}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )
+        })()}
 
       </div>
     </div>
