@@ -1388,7 +1388,9 @@ export default function ProgramUI(props: any) {
   const weekdayOrder = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
   const activeWeekday = weekdayOrder[activeDay];
   const day = DAYS.find(d => (scheduleAssignments["lift-" + d.id] || ["Monday","Tuesday","Thursday","Saturday"][d.id-1]) === activeWeekday) || { id: 0, label: activeWeekday, title: "Rest Day", accent: "#444", quote: "Rest is where adaptation happens.", quoteAuthor: "Science", supersets: [], tips: [], preview: "No lift scheduled today.", warmup: [] };
-  const isRestDay = !DAYS.find(d => (scheduleAssignments["lift-" + d.id] || ["Monday","Tuesday","Thursday","Saturday"][d.id-1]) === activeWeekday) && !Object.entries(scheduleAssignments).some(([k, v]) => k.startsWith("run-") && v === activeWeekday);
+  const weekRuns = NRC_PROGRAM[CURRENT_WEEK]?.runs || [];
+  const hasRunToday = weekRuns.some(r => (scheduleAssignments["run-" + r.runNum] || r.day) === activeWeekday);
+  const isRestDay = !DAYS.find(d => (scheduleAssignments["lift-" + d.id] || ["Monday","Tuesday","Thursday","Saturday"][d.id-1]) === activeWeekday) && !hasRunToday;
   const activeDayWeekday = isRestDay ? activeWeekday : (scheduleAssignments["lift-" + day.id] || ["Monday","Tuesday","Thursday","Saturday"][day.id-1]);
   const dayLog = day ? sessionLogs[`w${CURRENT_WEEK}-d${day.id}`] : null;
   const weekLogs = DAYS.map(d => sessionLogs[`w${CURRENT_WEEK}-d${d.id}`]).filter(Boolean);
