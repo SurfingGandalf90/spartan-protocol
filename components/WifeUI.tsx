@@ -9,7 +9,7 @@ const WEEK = WIFE_CURRENT_WEEK
 
 function CoachChat({ day }) {
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: "I'm here. You're on " + safeDay.title + " — Week " + WEEK + ". Ask me about any exercise, form cues, substitutions, or why it's in the program." }
+    { role: 'assistant', content: "I'm here. You're on " + day.title + " — Week " + WEEK + ". Ask me about any exercise, form cues, substitutions, or why it's in the program." }
   ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -25,14 +25,14 @@ function CoachChat({ day }) {
     setMessages(prev => [...prev, userMsg, { role: 'assistant', content: '...' }])
     setLoading(true)
     try {
-      const exerciseContext = safeDay.supersets.flatMap(ss => ss.exercises).map(ex => ex.name + ': ' + ex.note).join('\n')
+      const exerciseContext = day.supersets.flatMap(ss => ss.exercises).map(ex => ex.name + ': ' + ex.note).join('\n')
       const res = await fetch('/api/coach', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: 'claude-sonnet-4-5',
           max_tokens: 1000,
-          system: "You are a back-safe strength coach for Spartan Protocol. The athlete is Kimberly. Her program is a 3-day full body circuit — back-safe, no spinal flexion under load, no axial compression, all rows chest-supported. Today is " + safeDay.title + " (Week " + WEEK + "). Exercises today:\n" + exerciseContext + "\nKeep answers concise and practical.",
+          system: "You are a back-safe strength coach for Spartan Protocol. The athlete is Kimberly. Her program is a 3-day full body circuit — back-safe, no spinal flexion under load, no axial compression, all rows chest-supported. Today is " + day.title + " (Week " + WEEK + "). Exercises today:\n" + exerciseContext + "\nKeep answers concise and practical.",
           messages: [...messages, userMsg].filter(m => m.content !== '...').map(m => ({ role: m.role, content: m.content }))
         })
       })
@@ -47,7 +47,7 @@ function CoachChat({ day }) {
   }
 
   const handleKey = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }
-  const allExercises = safeDay.supersets.flatMap(ss => ss.exercises)
+  const allExercises = day.supersets.flatMap(ss => ss.exercises)
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 220px)', minHeight: 360 }}>
@@ -199,7 +199,7 @@ export default function WifeUI({ sessionLogs, onSaveLog, user }: any) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 16 }}>
               <div>
                 <div style={{ fontSize: 10, color: '#555', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 3 }}>{safeDay.focus} · {safeDay.duration}</div>
-                <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 20, fontWeight: 700, color: accent }}>{safeDay.title}</div>
+                <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 20, fontWeight: 700, color: accent }}>{day.title}</div>
               </div>
               <button onClick={() => setLogModal(day)} style={{ background: logs['wife-w' + WEEK + '-d' + safeDay.id] ? 'transparent' : accent, color: logs['wife-w' + WEEK + '-d' + safeDay.id] ? '#555' : '#0F0F0F', border: logs['wife-w' + WEEK + '-d' + safeDay.id] ? '1px solid #2a2a2a' : 'none', fontFamily: 'DM Mono,monospace', fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '10px 18px', cursor: 'pointer' }}>
                 {logs['wife-w' + WEEK + '-d' + safeDay.id] ? '✓ Logged' : 'Log Session'}
@@ -207,7 +207,7 @@ export default function WifeUI({ sessionLogs, onSaveLog, user }: any) {
             </div>
             <div style={{ fontSize: 11, color: '#666', lineHeight: 1.6, fontStyle: 'italic', marginBottom: 20 }}>{safeDay.note}</div>
 
-            {safeDay.supersets.map((circuit: any) => (
+            {day.supersets.map((circuit: any) => (
               <div key={circuit.id} style={{ border: '1px solid #222', borderLeft: '3px solid ' + accent, background: '#141414', marginBottom: 12 }}>
                 <div style={{ padding: '10px 18px', fontSize: 10, color: accent, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{circuit.name}</div>
                 {circuit.exercises.map((ex: any) => (
@@ -229,7 +229,7 @@ export default function WifeUI({ sessionLogs, onSaveLog, user }: any) {
           <>
             <div style={{ marginBottom: 16 }}>
               <div style={{ fontSize: 10, color: '#555', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 3 }}>Ask Coach · {day.label}</div>
-              <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 18, fontWeight: 700, color: accent }}>{safeDay.title}</div>
+              <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 18, fontWeight: 700, color: accent }}>{day.title}</div>
             </div>
             <CoachChat key={'coach-' + safeDay.id} day={day} />
           </>
