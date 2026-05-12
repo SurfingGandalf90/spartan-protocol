@@ -1607,7 +1607,7 @@ export default function ProgramUI(props: any) {
               const weekRuns = NRC_PROGRAM[CURRENT_WEEK]?.runs || [];
               const todayRuns = weekRuns.filter(r => r.day === ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][new Date().getDay()]);
               // Show run card on lift days that also have a run (Mon/Tue/Thu) or always show based on active day mapping
-              const dayRunMap = { 1: "Monday", 2: "Tuesday", 3: "Thursday", 4: null };
+              const dayRunMap = { 1: scheduleAssignments["run-1"] || "Monday", 2: scheduleAssignments["run-2"] || "Tuesday", 3: scheduleAssignments["run-3"] || "Thursday", 4: null };
               const runDay = dayRunMap[day.id];
               const run = runDay ? weekRuns.find(r => r.day === runDay) : null;
               if (!run) return null;
