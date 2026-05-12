@@ -1557,7 +1557,7 @@ export default function ProgramUI(props: any) {
 
             {logSaved && (
               <div style={{ padding: "10px 16px", background: "#0a150a", border: "1px solid #1a3a1a", fontSize: 11, color: "#4a8a6a", marginTop: 8 }}>
-                ✓ Log saved — Claude can read this when you ask for next week's program
+                ✓ Log saved - Claude can read this when you ask for next week's program
               </div>
             )}
 
@@ -1579,13 +1579,13 @@ export default function ProgramUI(props: any) {
         {/* ── PROGRAM VIEW ── */}
         {view === "program" && (
           <>
-            {isRestDay && (
-              <div style={{ textAlign: "center", padding: "60px 20px" }}>
-                <div style={{ fontSize: 40, marginBottom: 16 }}><SpartanLogo size={48} /></div>
-                <div style={{ fontFamily: "Syne,sans-serif", fontSize: 22, fontWeight: 700, color: "#E8E8E0", marginBottom: 12 }}>Recovery Day</div>
-                <div style={{ fontSize: 13, color: "#555", lineHeight: 1.8, maxWidth: 320, margin: "0 auto" }}>Rest is where the adaptation happens. No workouts are scheduled today - protect it like a training day.</div>
-              </div>
-            )}
+            {isRestDay && <div style={{ textAlign: "center", padding: "60px 20px" }}><div style={{ marginBottom: 16 }}><SpartanLogo size={48} /></div><div style={{ fontFamily: "Syne,sans-serif", fontSize: 22, fontWeight: 700, color: "#E8E8E0", marginBottom: 12 }}>Recovery Day</div><div style={{ fontSize: 13, color: "#555", lineHeight: 1.8, maxWidth: 320, margin: "0 auto" }}>Your muscles grow when you rest, not when you train. Embrace it.</div></div>}
+
+
+
+
+
+
             {/* Logged badge */}
             {dayLog && (
               <div style={{ padding: "8px 14px", background: "#0a150a", border: "1px solid #1a3a1a", marginBottom: 16, fontSize: 11, color: "#3a6a4a", letterSpacing: "0.05em", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
