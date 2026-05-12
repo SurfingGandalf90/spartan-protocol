@@ -740,16 +740,21 @@ function CoachChat({ day }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "claude-sonnet-4-5",
-          max_tokens: 1000,
           system: "You are a back-safe strength coach for Spartan Protocol. The athlete has a disc injury history. Today is " + day.title + " (Week " + CURRENT_WEEK + "). Exercises today: " + exerciseContext + ". Keep answers concise, practical, and always back-safe. Never recommend spinal flexion under load or axial compression.",
           messages: [...messages, userMsg].map(m => ({ role: m.role, content: m.content }))
         })
       });
-      const data = await res.json();
-      console.log("coach response:", data);
-      const reply = data.content || "Something went wrong — try again.";
-      setMessages(prev => [...prev.slice(0, -1), { role: "assistant", content: reply }]);
+      if (!res.ok) throw new Error("Server error");
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let full = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        full += decoder.decode(value, { stream: true });
+        setMessages(prev => [...prev.slice(0, -1), { role: "assistant", content: full + "▊" }]);
+      }
+      setMessages(prev => [...prev.slice(0, -1), { role: "assistant", content: full }]);
     } catch (e) {
       setMessages(prev => [...prev.slice(0, -1), { role: "assistant", content: "Connection error — check your internet and try again." }]);
     } finally {
