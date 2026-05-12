@@ -1075,7 +1075,7 @@ function ScheduleView() {
 
   const saveAssignments = (next) => {
     setAssignments(next);
-    try { localStorage.setItem("schedule-assignments", JSON.stringify(next)); window.dispatchEvent(new CustomEvent("schedule-updated", { detail: next })); } catch {}
+    try { localStorage.setItem("schedule-assignments", JSON.stringify(next)); } catch {}
   };
 
   const getDay = (key, def) => assignments[key] || def;
@@ -1348,14 +1348,12 @@ export default function ProgramUI(props: any) {
       } catch (e) {}
     }
     load();
-    const handleStorage = (e) => {
-      if (e.detail) { setScheduleAssignments(e.detail); return; }
+    const handleStorage = () => {
       const sa = localStorage.getItem("schedule-assignments");
       if (sa) setScheduleAssignments(JSON.parse(sa));
     };
     window.addEventListener("storage", handleStorage);
-    window.addEventListener("schedule-updated", handleStorage);
-    return () => { window.removeEventListener("storage", handleStorage); window.removeEventListener("schedule-updated", handleStorage); };
+    return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
   const saveUnit = (u) => {
@@ -1389,9 +1387,9 @@ export default function ProgramUI(props: any) {
 
   const weekdayOrder = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
   const activeWeekday = weekdayOrder[activeDay];
-  const day = DAYS.find(d => (scheduleAssignments["lift-" + d.id] || ["Monday","Tuesday","Thursday","Saturday"][d.id-1]) === activeWeekday);
-  const activeDayWeekday = day ? (scheduleAssignments["lift-" + day.id] || ["Monday","Tuesday","Thursday","Saturday"][day.id-1]) : activeWeekday;
-  const dayLog = day ? sessionLogs[`w${CURRENT_WEEK}-d${day.id}`] : null;
+  const day = DAYS.find(d => (scheduleAssignments["lift-" + d.id] || ["Monday","Tuesday","Thursday","Saturday"][d.id-1]) === activeWeekday) || DAYS[activeDay];
+  const activeDayWeekday = scheduleAssignments["lift-" + day.id] || ["Monday","Tuesday","Thursday","Saturday"][day.id-1];
+  const dayLog = sessionLogs[`w${CURRENT_WEEK}-d${day.id}`];
   const weekLogs = DAYS.map(d => sessionLogs[`w${CURRENT_WEEK}-d${d.id}`]).filter(Boolean);
   const allLogged = weekLogs.length === DAYS.length;
   return (
@@ -1594,7 +1592,7 @@ export default function ProgramUI(props: any) {
                 <button onClick={() => setLogModal(day)} style={{ background: "none", border: "none", color: "#4a8a6a", fontFamily: "'DM Mono',monospace", fontSize: 10, cursor: "pointer", letterSpacing: "0.06em" }}>Edit</button>
               </div>
             )}
-            {day && (<>
+
             {/* Quote */}
             <div style={{ borderLeft: `3px solid ${day.accent}`, paddingLeft: 16, marginBottom: 24 }}>
               <div style={{ fontFamily: "'Syne',sans-serif", fontSize: "clamp(13px,3vw,17px)", fontWeight: 700, color: "#D0D0C8", lineHeight: 1.45, marginBottom: 6, fontStyle: "italic" }}>
@@ -1615,11 +1613,9 @@ export default function ProgramUI(props: any) {
               </button>
             </div>
 
-            </>) }
             {/* ── RUN CARD ── */}
             {(() => {
               const weekRuns = NRC_PROGRAM[CURRENT_WEEK]?.runs || [];
-              console.log("activeDayWeekday:", activeDayWeekday, "activeWeekday:", activeWeekday);
               const todayRuns = weekRuns.filter(r => r.day === ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][new Date().getDay()]);
               // Show run card on lift days that also have a run (Mon/Tue/Thu) or always show based on active day mapping
               const run = weekRuns.find(r => (scheduleAssignments["run-" + r.runNum] || r.day) === activeDayWeekday);
@@ -1869,7 +1865,6 @@ export default function ProgramUI(props: any) {
             <div style={{ marginTop: 16, padding: "10px 16px", background: "#0d0d0d", border: "1px solid #1a1a1a", fontSize: 11, color: "#444", letterSpacing: "0.04em" }}>
               Mobility inspired by Steph Rose / Phase SiX — <span style={{ color: "#555" }}>phase6online.com</span>
             </div>
-            </>) }
           </>
         )}
       </div>
