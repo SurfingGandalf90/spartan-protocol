@@ -732,7 +732,7 @@ function CoachChat({ day }) {
     if (!text) return;
     setInput("");
     const userMsg = { role: "user", content: text };
-    setMessages(prev => [...prev, userMsg, { role: "assistant", content: "..." }]);
+    setMessages(prev => [...prev, userMsg, { role: "assistant", content: "▊" }]);
     setLoading(true);
     try {
       const exerciseContext = day.supersets.flatMap(ss => ss.exercises).map(ex => ex.name + ": " + ex.note).join("\n");
@@ -778,7 +778,7 @@ function CoachChat({ day }) {
                 const q = "How do I cue " + ex.name + "?";
                 setMessages(prev => [...prev,
                   { role: "user", content: q },
-                  { role: "assistant", content: "..." }
+                  { role: "assistant", content: "▊" }
                 ]);
               }} style={{
                 background: "#111", border: "1px solid #2a2a2a", color: "#777",
@@ -793,7 +793,7 @@ function CoachChat({ day }) {
               <button key={i} onClick={() => {
                 setMessages(prev => [...prev,
                   { role: "user", content: q },
-                  { role: "assistant", content: "..." }
+                  { role: "assistant", content: "▊" }
                 ]);
               }} style={{
                 textAlign: "left", background: "#0d0d0d", border: "1px solid #1e1e1e",
@@ -818,7 +818,7 @@ function CoachChat({ day }) {
               border: "1px solid " + (msg.role === "user" ? day.accent + "35" : "#222"),
               fontSize: 13, color: msg.role === "user" ? day.accent : "#ccc",
               lineHeight: 1.7, letterSpacing: "0.02em",
-            }}>{msg.content}</div>
+            }}><span className={msg.content === "▊" ? "blink" : ""}>{msg.content}</span></div>
           </div>
         ))}
         <div ref={bottomRef} />
@@ -1401,7 +1401,7 @@ export default function ProgramUI(props: any) {
         .day-tab:hover { border-color:#444; color:#aaa; }
         .day-tab.active { background:var(--accent); border-color:var(--accent); color:#0F0F0F; font-weight:500; }
         .day-tab.logged::after { content:''; position:absolute; top:3px; right:3px; width:5px; height:5px; border-radius:50%; background:#6EC6A0; }
-        .superset-card { border:1px solid #222; border-left:3px solid var(--accent); background:#141414; margin-bottom:12px; }
+        .blink { animation: blink 1s step-end infinite; } @keyframes blink { 50% { opacity: 0; } } .superset-card { border:1px solid #222; border-left:3px solid var(--accent); background:#141414; margin-bottom:12px; }
         .superset-header { padding:14px 18px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; }
         .superset-header:hover { background:#1a1a1a; }
         .exercise-row { padding:10px 18px 10px 32px; border-top:1px solid #1e1e1e; display:grid; grid-template-columns:1fr auto; gap:8px; align-items:start; }
