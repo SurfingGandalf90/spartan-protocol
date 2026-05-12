@@ -94,7 +94,7 @@ export async function getPreferences(userId: string) {
     .from('user_preferences')
     .select('*')
     .eq('user_id', userId)
-    .single()
+    .maybeSingle()
   return data || { weight_unit: 'lb', current_week: 1 }
 }
 
