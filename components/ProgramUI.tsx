@@ -1379,7 +1379,9 @@ export default function ProgramUI(props: any) {
 
   const toggleSet = (key) => setOpenSets(prev => ({ ...prev, [key]: !prev[key] }));
 
-  const day = DAYS[activeDay];
+  const weekdayOrder = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+  const activeWeekday = weekdayOrder[activeDay];
+  const day = DAYS.find(d => (scheduleAssignments["lift-" + d.id] || ["Monday","Tuesday","Thursday","Saturday"][d.id-1]) === activeWeekday) || DAYS[activeDay];
   const activeDayWeekday = scheduleAssignments["lift-" + day.id] || ["Monday","Tuesday","Thursday","Saturday"][day.id-1];
   const dayLog = sessionLogs[`w${CURRENT_WEEK}-d${day.id}`];
   const weekLogs = DAYS.map(d => sessionLogs[`w${CURRENT_WEEK}-d${d.id}`]).filter(Boolean);
@@ -1447,12 +1449,14 @@ export default function ProgramUI(props: any) {
 
           {(view === "program" || view === "coach") && (
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap", paddingBottom: 0 }}>
-              {DAYS.map((d, i) => {
+              { ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"].map((weekday, i) => {
+                const d = DAYS.find(d => (scheduleAssignments["lift-" + d.id] || ["Monday","Tuesday","Thursday","Saturday"][d.id-1]) === weekday);
+                if (!d) return null;
                 const logged = !!sessionLogs[`w${CURRENT_WEEK}-d${d.id}`];
                 return (
                   <button key={d.id} className={`day-tab${activeDay === i ? " active" : ""}${logged ? " logged" : ""}`}
                     style={{ "--accent": d.accent }} onClick={() => { setActiveDay(i); setShowWarmup(false); }}>
-                    {d.label}
+                    {weekday.slice(0,3).toUpperCase()}
                   </button>
                 );
               })}
