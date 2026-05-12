@@ -1379,12 +1379,6 @@ export default function ProgramUI(props: any) {
 
   const toggleSet = (key) => setOpenSets(prev => ({ ...prev, [key]: !prev[key] }));
 
-  const dayOrder = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
-  const orderedDays = [...DAYS].sort((a, b) => {
-    const aDay = scheduleAssignments["lift-" + a.id] || ["Monday","Tuesday","Thursday","Saturday"][a.id-1];
-    const bDay = scheduleAssignments["lift-" + b.id] || ["Monday","Tuesday","Thursday","Saturday"][b.id-1];
-    return dayOrder.indexOf(aDay) - dayOrder.indexOf(bDay);
-  });
   const day = DAYS[activeDay];
   const activeDayWeekday = scheduleAssignments["lift-" + day.id] || ["Monday","Tuesday","Thursday","Saturday"][day.id-1];
   const dayLog = sessionLogs[`w${CURRENT_WEEK}-d${day.id}`];
