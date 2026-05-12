@@ -83,7 +83,7 @@ function ProfileSelector({ user, onSelect }: { user: User; onSelect: (p: string)
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
-  const [profile, setProfile] = useState<string | null>(() => localStorage.getItem("spartan-profile"))
+  const [profile, setProfile] = useState<string | null>(() => typeof window !== "undefined" ? localStorage.getItem("spartan-profile") : null)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
