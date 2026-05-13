@@ -807,7 +807,7 @@ function CoachChat({ day }) {
     <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 220px)", minHeight: 360 }}>
 
       {/* Exercise quick-tap chips */}
-      {messages.length === 1 && (
+      {(
         <div style={{ marginBottom: 14 }}>
           <div style={{ fontSize: 10, color: "#444", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 8 }}>Tap an exercise to ask about it</div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
@@ -829,6 +829,16 @@ function CoachChat({ day }) {
               }}>{q}</button>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Reset conversation */}
+      {messages.length > 1 && (
+        <div style={{ marginBottom: 8, display: "flex", justifyContent: "flex-end" }}>
+          <button onClick={() => setMessages([{ role: "assistant", content: "I'm here. You're on " + day.title + " — Week " + CURRENT_WEEK + ". Ask me about any exercise, form cues, substitutions, or why it's in the program." }])}
+            style={{ background: "none", border: "1px solid #2a2a2a", color: "#555", fontFamily: "DM Mono,monospace", fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", padding: "5px 10px", cursor: "pointer" }}>
+            ↩ New conversation
+          </button>
         </div>
       )}
 
