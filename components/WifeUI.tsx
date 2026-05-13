@@ -98,12 +98,20 @@ function CoachChat({ day }) {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                  model: 'claude-sonnet-4-5', max_tokens: 500,
                   system: "Back-safe coach for Kimberly's 3-day circuit program. Concise answers only.",
                   messages: [{ role: 'user', content: q }]
                 })
-              }).then(r => r.json()).then(d => {
-                setMessages(prev => [...prev.slice(0, -1), { role: 'assistant', content: d.content?.[0]?.text || 'Try again.' }])
+              }).then(async r => {
+                const reader = r.body.getReader()
+                const decoder = new TextDecoder()
+                let full = ''
+                while (true) {
+                  const { done, value } = await reader.read()
+                  if (done) break
+                  full += decoder.decode(value, { stream: true })
+                  setMessages(prev => [...prev.slice(0, -1), { role: 'assistant', content: full + '▊' }])
+                }
+                setMessages(prev => [...prev.slice(0, -1), { role: 'assistant', content: full }])
                 setLoading(false)
               })
             }} style={{ textAlign: 'left', background: '#0d0d0d', border: '1px solid #1e1e1e', color: '#666', fontFamily: 'DM Mono,monospace', fontSize: 11, padding: '8px 12px', cursor: 'pointer', marginBottom: 5, display: 'block', width: '100%' }}>{q}</button>
