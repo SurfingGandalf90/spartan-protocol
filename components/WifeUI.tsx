@@ -197,7 +197,23 @@ export default function WifeUI({ sessionLogs, onSaveLog, user }: any) {
         {/* Program view */}
         {view === 'program' && (
           <>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 16 }}>
+            {isRestDay && (
+              <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+                <div style={{ marginBottom: 16 }}>
+                  <svg width={48} height={48} viewBox="0 0 48 48" fill="none">
+                    <path d="M8,10 L40,10 L40,30 L24,44 L8,30 Z" fill="#1a1506" stroke={accent} strokeWidth="1.4" strokeLinejoin="miter" />
+                    <path d="M11,13 L37,13 L37,29 L24,40 L11,29 Z" fill="none" stroke={accent} strokeWidth="0.5" strokeOpacity="0.3" strokeLinejoin="miter" />
+                    <line x1="24" y1="2" x2="24" y2="46" stroke={accent} strokeWidth="1.8" strokeLinecap="square" />
+                    <polygon points="24,1 29,13 24,10 19,13" fill={accent} />
+                    <line x1="16" y1="17" x2="32" y2="17" stroke={accent} strokeWidth="1.5" strokeLinecap="square" />
+                    <polygon points="24,46 22,43 26,43" fill={accent} />
+                  </svg>
+                </div>
+                <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 22, fontWeight: 700, color: '#E8E8E0', marginBottom: 12 }}>Recovery Day</div>
+                <div style={{ fontSize: 13, color: '#555', lineHeight: 1.8, maxWidth: 320, margin: '0 auto' }}>Your muscles grow when you rest, not when you train. Embrace it.</div>
+              </div>
+            )}
+            {!isRestDay && <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 16 }}>
               <div>
                 <div style={{ fontSize: 10, color: '#555', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 3 }}>{safeDay.focus} · {safeDay.duration}</div>
                 <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 20, fontWeight: 700, color: accent }}>{day.title}</div>
@@ -222,6 +238,7 @@ export default function WifeUI({ sessionLogs, onSaveLog, user }: any) {
                 ))}
               </div>
             ))}
+            }
           </>
         )}
 
