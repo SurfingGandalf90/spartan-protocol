@@ -764,6 +764,39 @@ function CoachChat({ day }) {
 
   };
 
+  const sendMessage = async (text) => {
+    if (!text.trim() || loading) return;
+    const userMsg = { role: "user", content: text.trim() };
+    setMessages(prev => [...prev, userMsg, { role: "assistant", content: "▊" }]);
+    setLoading(true);
+    try {
+      const exerciseContext = day.supersets.flatMap(ss => ss.exercises).map(ex => ex.name + ": " + ex.note).join("\n");
+      const res = await fetch("/api/coach", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          system: "You are a back-safe strength coach for Spartan Protocol. The athlete has a disc injury history. Today is " + day.title + " (Week " + CURRENT_WEEK + "). Exercises today: " + exerciseContext + ". Keep answers concise, practical, and always back-safe. Never recommend spinal flexion under load or axial compression.",
+          messages: [...messages, userMsg].slice(-6).map(m => ({ role: m.role, content: m.content }))
+        })
+      });
+      if (!res.ok) throw new Error("Server error");
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let full = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        full += decoder.decode(value, { stream: true });
+        setMessages(prev => [...prev.slice(0, -1), { role: "assistant", content: full + "▊" }]);
+      }
+      setMessages(prev => [...prev.slice(0, -1), { role: "assistant", content: full }]);
+    } catch (e) {
+      setMessages(prev => [...prev.slice(0, -1), { role: "assistant", content: "Connection error — try again." }]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleKey = (e) => {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
   };
