@@ -781,10 +781,8 @@ function CoachChat({ day }) {
             {allExercises.map((ex, i) => (
               <button key={i} onClick={() => {
                 const q = "How do I cue " + ex.name + "?";
-                setMessages(prev => [...prev,
-                  { role: "user", content: q },
-                  { role: "assistant", content: "▊" }
-                ]);
+                setInput(q);
+                setTimeout(() => send(), 0);
               }} style={{
                 background: "#111", border: "1px solid #2a2a2a", color: "#777",
                 fontFamily: "DM Mono,monospace", fontSize: 10, padding: "6px 10px",
@@ -796,10 +794,8 @@ function CoachChat({ day }) {
           <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
             {["My back feels tight — should I stop?", "Give me a substitute for an exercise", "Why is this exercise in today's session?"].map((q, i) => (
               <button key={i} onClick={() => {
-                setMessages(prev => [...prev,
-                  { role: "user", content: q },
-                  { role: "assistant", content: "▊" }
-                ]);
+                setInput(q);
+                setTimeout(() => send(), 0);
               }} style={{
                 textAlign: "left", background: "#0d0d0d", border: "1px solid #1e1e1e",
                 color: "#666", fontFamily: "DM Mono,monospace", fontSize: 11,
