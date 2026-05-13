@@ -213,7 +213,8 @@ export default function WifeUI({ sessionLogs, onSaveLog, user }: any) {
                 <div style={{ fontSize: 13, color: '#555', lineHeight: 1.8, maxWidth: 320, margin: '0 auto' }}>Your muscles grow when you rest, not when you train. Embrace it.</div>
               </div>
             )}
-            {!isRestDay && <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 16 }}>
+            {!isRestDay && (<>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 16 }}>
               <div>
                 <div style={{ fontSize: 10, color: '#555', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 3 }}>{safeDay.focus} · {safeDay.duration}</div>
                 <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 20, fontWeight: 700, color: accent }}>{day.title}</div>
@@ -238,7 +239,7 @@ export default function WifeUI({ sessionLogs, onSaveLog, user }: any) {
                 ))}
               </div>
             ))}
-            }
+            </>)}
           </>
         )}
 
