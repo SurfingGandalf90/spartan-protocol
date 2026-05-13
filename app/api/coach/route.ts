@@ -4,6 +4,7 @@ export const runtime = 'edge'
 export async function POST(request: Request) {
   try {
     const { messages, system } = await request.json()
+    console.log('coach hit, messages:', messages.length, 'system len:', system?.length)
 
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
