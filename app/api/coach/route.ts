@@ -1,5 +1,5 @@
 // @ts-nocheck
-export const runtime = 'edge'
+import { NextResponse } from 'next/server'
 
 export async function POST(request) {
   try {
@@ -54,7 +54,11 @@ export async function POST(request) {
     })
 
     return new Response(readable, {
-      headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'X-Accel-Buffering': 'no',
+        'Cache-Control': 'no-cache',
+      }
     })
   } catch (error) {
     return new Response(String(error), { status: 500 })
