@@ -138,8 +138,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <AuthContext.Provider value={{ user: session.user, session, profile }}>
       <div style={{ position: 'relative' }}>
-        <button onClick={() => setProfile(null)} style={{ position: 'fixed', top: 12, right: 12, zIndex: 999, background: '#1a1a1a', border: '1px solid #555', color: '#bbb', fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '5px 10px', cursor: 'pointer' }}>
-          Switch
+        <button onClick={() => setProfile(null)} style={{ position: 'fixed', top: 12, right: 12, zIndex: 999, background: '#1a1a1a', border: '1px solid #777', color: '#ddd', fontFamily: "'DM Mono', monospace", fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '8px 16px', cursor: 'pointer' }}>
+          Switch Profile
         </button>
         {children}
       </div>
