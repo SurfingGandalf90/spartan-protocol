@@ -741,7 +741,7 @@ function CoachChat({ day }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           system: "You are a back-safe strength coach for Spartan Protocol. The athlete has a disc injury history. Today is " + day.title + " (Week " + CURRENT_WEEK + "). Exercises today: " + exerciseContext + ". Keep answers concise, practical, and always back-safe. Never recommend spinal flexion under load or axial compression.",
-          messages: [...messages, userMsg].map(m => ({ role: m.role, content: m.content }))
+          messages: [...messages, userMsg].slice(-6).map(m => ({ role: m.role, content: m.content }))
         })
       });
       if (!res.ok) throw new Error("Server error");
