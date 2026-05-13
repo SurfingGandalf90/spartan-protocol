@@ -30,15 +30,21 @@ function CoachChat({ day }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-5',
-          max_tokens: 1000,
           system: "You are a back-safe strength coach for Spartan Protocol. The athlete is Kimberly. Her program is a 3-day full body circuit — back-safe, no spinal flexion under load, no axial compression, all rows chest-supported. Today is " + day.title + " (Week " + WEEK + "). Exercises today:\n" + exerciseContext + "\nKeep answers concise and practical.",
           messages: [...messages, userMsg].filter(m => m.content !== '...').map(m => ({ role: m.role, content: m.content }))
         })
       })
-      const data = await res.json()
-      const reply = data.content?.[0]?.text || 'Something went wrong — try again.'
-      setMessages(prev => [...prev.slice(0, -1), { role: 'assistant', content: reply }])
+      if (!res.ok) throw new Error('Server error')
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let full = ''
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        full += decoder.decode(value, { stream: true })
+        setMessages(prev => [...prev.slice(0, -1), { role: 'assistant', content: full + '▊' }])
+      }
+      setMessages(prev => [...prev.slice(0, -1), { role: 'assistant', content: full }])
     } catch (e) {
       setMessages(prev => [...prev.slice(0, -1), { role: 'assistant', content: 'Connection error — try again.' }])
     } finally {
@@ -64,12 +70,20 @@ function CoachChat({ day }) {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
-                    model: 'claude-sonnet-4-5', max_tokens: 500,
                     system: "Back-safe coach for Kimberly's 3-day circuit program. Concise cues only.",
                     messages: [{ role: 'user', content: q }]
                   })
-                }).then(r => r.json()).then(d => {
-                  setMessages(prev => [...prev.slice(0, -1), { role: 'assistant', content: d.content?.[0]?.text || 'Try again.' }])
+                }).then(async r => {
+                  const reader = r.body.getReader()
+                  const decoder = new TextDecoder()
+                  let full = ''
+                  while (true) {
+                    const { done, value } = await reader.read()
+                    if (done) break
+                    full += decoder.decode(value, { stream: true })
+                    setMessages(prev => [...prev.slice(0, -1), { role: 'assistant', content: full + '▊' }])
+                  }
+                  setMessages(prev => [...prev.slice(0, -1), { role: 'assistant', content: full }])
                   setLoading(false)
                 })
               }} style={{ background: '#111', border: '1px solid #2a2a2a', color: '#777', fontFamily: 'DM Mono,monospace', fontSize: 10, padding: '6px 10px', cursor: 'pointer' }}>{ex.name}</button>
@@ -160,7 +174,7 @@ export default function WifeUI({ sessionLogs, onSaveLog, user }: any) {
           <div style={{ display: 'flex', gap: 18, marginBottom: 0 }}>
             {['program', 'log', 'coach', 'schedule'].map(t => (
               <button key={t} className="wife-nav-tab"
-                style={{ color: view === t ? '#E8E8E0' : '#444', borderBottomColor: view === t ? accent : 'transparent' }}
+                style={{ color: view === t ? '#E8E8E0' : '#999', borderBottomColor: view === t ? accent : 'transparent' }}
                 onClick={() => setView(t)}>{t}</button>
             ))}
           </div>
