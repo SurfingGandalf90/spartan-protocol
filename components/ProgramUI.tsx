@@ -779,11 +779,7 @@ function CoachChat({ day }) {
           <div style={{ fontSize: 10, color: "#444", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 8 }}>Tap an exercise to ask about it</div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
             {allExercises.map((ex, i) => (
-              <button key={i} onClick={() => {
-                const q = "How do I cue " + ex.name + "?";
-                setInput(q);
-                setTimeout(() => send(), 0);
-              }} style={{
+              <button key={i} onClick={() => sendMessage("How do I cue " + ex.name + "?")} style={{
                 background: "#111", border: "1px solid #2a2a2a", color: "#777",
                 fontFamily: "DM Mono,monospace", fontSize: 10, padding: "6px 10px",
                 cursor: "pointer", letterSpacing: "0.03em", textAlign: "left",
@@ -793,10 +789,7 @@ function CoachChat({ day }) {
           <div style={{ fontSize: 10, color: "#444", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 8 }}>Or ask anything</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
             {["My back feels tight — should I stop?", "Give me a substitute for an exercise", "Why is this exercise in today's session?"].map((q, i) => (
-              <button key={i} onClick={() => {
-                setInput(q);
-                setTimeout(() => send(), 0);
-              }} style={{
+              <button key={i} onClick={() => sendMessage(q)} style={{
                 textAlign: "left", background: "#0d0d0d", border: "1px solid #1e1e1e",
                 color: "#666", fontFamily: "DM Mono,monospace", fontSize: 11,
                 padding: "8px 12px", cursor: "pointer", letterSpacing: "0.03em",
