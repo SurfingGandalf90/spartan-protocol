@@ -7,8 +7,6 @@ export async function POST(request) {
     const messages = body.messages
     const system = body.system
 
-    console.log('coach hit, messages:', messages.length, 'system len:', system ? system.length : 0)
-
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -39,9 +37,7 @@ export async function POST(request) {
           const { done, value } = await reader.read()
           if (done) break
           const chunk = decoder.decode(value, { stream: true })
-          const lines = chunk.split('
-')
-          for (const line of lines) {
+          for (const line of chunk.split('\n')) {
             if (line.startsWith('data: ')) {
               const data = line.slice(6).trim()
               if (data === '[DONE]') continue
