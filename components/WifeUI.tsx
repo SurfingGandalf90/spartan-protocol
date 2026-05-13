@@ -57,7 +57,7 @@ function CoachChat({ day }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 220px)', minHeight: 360 }}>
-      {messages.length === 1 && (
+      {(
         <div style={{ marginBottom: 14 }}>
           <div style={{ fontSize: 10, color: '#444', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 8 }}>Tap an exercise to ask about it</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
