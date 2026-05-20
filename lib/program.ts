@@ -2,8 +2,8 @@
 // lib/program.ts
 
 // ─── WEEK DATA — Claude updates this block each week ───────────────────────
-const CURRENT_WEEK = 2;
-const WEEK_THEME = "Build on the base — load up, add variety, own the breathing";
+const CURRENT_WEEK = 3;
+const WEEK_THEME = "Slow it down to build it up — tempo reveals everything";
 const RPE_RANGE = "7–8";
 
 // ─── NRC 8-WEEK PROGRAM — Actual plan from Nike Run Club ────────────────────
@@ -281,179 +281,80 @@ const NEURO_SNACKS = [
 
 const DAYS = [
   {
-    id: 1, label: "Day 1", title: "Upper Body — Push",
-    accent: "#E8C547",
-    quote: "The secret of getting ahead is getting started.",
-    quoteAuthor: "Mark Twain",
-    preview: "Week 2 Push day. Floor press is out — deficit push-ups are in based on your feedback. KB press moves to 35lb. Dips join the program for a new pressing angle. Your core needs to earn breathing under load — heel taps stay until dead bugs are achievable.",
-    tips: [
-      "Deficit push-ups off the dip bar handles give you more range than the floor and load the pec fully. Lower until you feel the stretch, pause 1 second, press.",
-      "KB Goblet Press moves to 35lb this week. If form breaks at any point, drop back to 26lb — never sacrifice position for load.",
-      "Heel taps are your dead bug regression. Lower back stays glued to the floor the entire time. If it lifts even slightly, your range is too big — shorten it.",
-    ],
-    warmup: [
-      { name: "Pelvic Tilts (standing)", reps: "10 slow", focus: "Lumbar decompression before loading", cue: "Tuck & untuck only — nothing else moves" },
-      { name: "Cat-Cow (all fours)", reps: "8 slow breaths", focus: "Thoracic segmentation, spine prep", cue: "Move one vertebra at a time" },
-      { name: "Thread the Needle", reps: "6/side", focus: "Rib cage & upper back mobility", cue: "Ground arm stays still, reach through as far as possible" },
-      { name: "Wall Slide", reps: "10 reps", focus: "Scapular upward rotation, shoulder prep", cue: "Keep low back flat against wall throughout" },
-      { name: "Shoulder CAR", reps: "4 slow circles/side", focus: "Full shoulder joint range of motion", cue: "Maximize every inch of the circle" },
-      { name: "Bear Crawl Hold (hover, 5 sec)", reps: "4 holds", focus: "Serratus activation, shoulder stability", cue: "Knees 1 inch off ground, push the floor away" },
-      { name: "Band Pull-Apart", reps: "15 reps", focus: "Rear delt & chest opener before pressing", cue: "Squeeze shoulder blades together at the back" },
-    ],
+    id: 1, label: "Day 1", title: "Upper Body — Push", accent: "#E8C547",
+    note: "FBB focus: feel the pec and delt load, not just move the weight. Pause and breathe at the stretched position on every rep.",
     supersets: [
-      {
-        id: "A", name: "Superset A — Chest & Shoulder Power",
-        exercises: [
-          { name: "Deficit Push-Up (hands on dip bar handles)", sets: 3, reps: "10-12", load: "Bodyweight", note: "Pause at bottom — better chest stimulus than floor press per your log" },
-          { name: "KB Goblet Press (kneeling)", sets: 3, reps: "10", load: "35 lb KB", note: "Up from 26lb — kneeling removes spinal load, own the position first" },
-        ]
-      },
-      {
-        id: "B", name: "Superset B — Dip & Core",
-        exercises: [
-          { name: "Dip (bodyweight, upright torso)", sets: 3, reps: "8-10", load: "Bodyweight", note: "Stay upright — forward lean shifts load to chest but risks lumbar extension" },
-          { name: "Heel Tap (supine)", sets: 3, reps: "10/side", load: "Bodyweight", note: "Dead bug regression — lower back glued to floor, alternate heel to floor slowly and deliberately" },
-        ]
-      },
-      {
-        id: "C", name: "Superset C — Lateral Raise & Carry",
-        exercises: [
-          { name: "DB Lateral Raise", sets: 3, reps: "15", load: "15 lb DB", note: "Same load as Week 1, added 3 reps — more volume, same quality" },
-          { name: "KB Farmer Carry (pause at turn)", sets: 3, reps: "20m", load: "53 lb KB", note: "Same load, add 3-sec pause at each end — increases stability demand" },
-        ]
-      },
+      { id: "A", name: "Superset A — Chest + Core", exercises: [
+        { name: "Deficit Push-Up (hands on dip bar handles)", sets: "4", reps: "8", load: "Bodyweight", note: "3-1-1-0 tempo. At the bottom, pause and take one breath before pressing. Feel the chest fully loaded at the bottom — that's the functional range. Elbows 45 degrees." },
+        { name: "Heel Tap (supine)", sets: "4", reps: "12/side", load: "Bodyweight", note: "Lower back glued to floor. Exhale fully before each rep. Core activation reset between pressing sets." },
+      ]},
+      { id: "B", name: "Superset B — Unilateral Press + Loaded Carry", exercises: [
+        { name: "Single Arm KB Press (kneeling)", sets: "3", reps: "8/side", load: "26 lb KB", note: "3-1-1-0 tempo. FBB cue: at the bottom, feel the shoulder loaded in the socket before you press. Don't rush the start. Kneeling kills the leg drive — pure shoulder and core. Left then right, full focus each side." },
+        { name: "KB Farmer Carry (pause at turn)", sets: "3", reps: "20m", load: "53 lb KBs", note: "Packed shoulders, tall spine. Pause 2 full seconds at each turn. FBB carry cue: feel the lats engaged like you're protecting your armpits." },
+      ]},
+      { id: "C", name: "Superset C — Dip + Delt Isolation", exercises: [
+        { name: "Dip (bodyweight, upright torso)", sets: "3", reps: "8", load: "BW + band assist", note: "3-1-1-0 tempo. Stay upright. At the bottom, pause and breathe. Band assist is intentional — own the pattern before loading it." },
+        { name: "DB Lateral Raise", sets: "3", reps: "12", load: "15 lb DBs", note: "FBB cue: lead with elbows, hands are just hooks. 2-sec eccentric. Keep tension at the bottom — don't let the delts fully relax. Stop at shoulder height." },
+      ]},
     ]
   },
   {
-    id: 2, label: "Day 2", title: "Lower Body — Glute & Ham",
-    accent: "#6EC6A0",
-    quote: "Your body can stand almost anything. It's your mind you have to convince.",
-    quoteAuthor: "Unknown",
-    preview: "Posterior chain week 2. Hip thrusts load up and hold longer at the top. RDL moves to staggered stance for more single-leg stimulus without full instability risk. Slant board reverse lunges are new — the elevated heel changes loading angle, increases quad depth, and keeps the spine completely neutral. Glute bands are added to the warmup for stronger activation before loading.",
-    tips: [
-      "Slant board reverse lunges will feel different from flat ground — the elevated heel shifts more load into the quad. Start lighter than you think and learn the pattern first.",
-      "Staggered stance RDL: back foot barely touches the floor for balance. Think 90% weight on the front leg. Feel the hamstring on the working side.",
-      "Hip thrust 3-sec squeeze at the top is the whole point. Posterior pelvic tilt at lockout — don't hyperextend the lower back.",
-    ],
-    warmup: [
-      { name: "Pelvic Tilts (standing)", reps: "10 slow", focus: "Establish neutral pelvis — the whole session lives here", cue: "Find neutral between tuck and arch" },
-      { name: "Hip Circles (standing)", reps: "8 each direction", focus: "Hip joint lubrication, full pelvic mobility", cue: "Smooth and continuous — connect every point of the circle" },
-      { name: "90/90 Hip Flow (floor)", reps: "6 transitions/side", focus: "Hip internal & external rotation", cue: "Shift slowly — feel the pull change with every degree" },
-      { name: "Quadruped Hip CARs", reps: "4 full circles/side", focus: "Hip joint full range of motion", cue: "Maximize the circle, minimize spine compensation" },
-      { name: "Glute Bridge with Pelvic Tilt Hold", reps: "10 reps, 3-sec hold", focus: "Glute activation & posterior tilt pattern", cue: "Posterior tilt at the top — don't hyperextend" },
-      { name: "Glute Band Lateral Walk (band above knees)", reps: "15 steps/side", focus: "Glute med activation with band resistance — stronger stimulus than bodyweight", cue: "Stay low, drive knees out against band, don't let hips shift" },
-      { name: "Standing Hamstring Pendulum Swing", reps: "10 slow swings/side", focus: "Hamstring dynamic lengthening, hip hinge prep", cue: "Control the swing both ways — don't let it flop" },
-    ],
+    id: 2, label: "Day 2", title: "Lower Body — Glute & Ham", accent: "#6EC6A0",
+    note: "FBB focus: find the glute and hamstring in every rep. If you feel it in your lower back, you've lost the position.",
     supersets: [
-      {
-        id: "A", name: "Superset A — Hip Drive & Hinge",
-        exercises: [
-          { name: "KB Hip Thrust (bench, 3-sec squeeze)", sets: 4, reps: "10", load: "35 lb KB", note: "Up in load — add 3-sec glute squeeze at top every single rep, posterior tilt at lockout" },
-          { name: "KB Staggered Stance RDL", sets: 4, reps: "8/side", load: "35 lb KB", note: "Back foot lightly contacts floor for balance only — more single-leg stimulus, neutral spine always" },
-        ]
-      },
-      {
-        id: "B", name: "Superset B — Slant Board & Lateral",
-        exercises: [
-          { name: "Slant Board Reverse Lunge (DB)", sets: 3, reps: "8/side", load: "15 lb DB", note: "New this week — heels elevated on slant board, increases quad depth, torso stays upright" },
-          { name: "Side-Lying Hip Abduction (glute band)", sets: 3, reps: "15/side", load: "Glute band", note: "Band added above knee for progressive overload vs Week 1 bodyweight" },
-        ]
-      },
-      {
-        id: "C", name: "Superset C — Hamstring & Anti-Rotation",
-        exercises: [
-          { name: "Nordic Curl Eccentric (5-sec)", sets: 3, reps: "6", load: "Bodyweight", note: "Up from 5 reps — 5 seconds down, catch yourself, reset fully" },
-          { name: "Pallof Press Hold (band)", sets: 3, reps: "12/side", load: "Light band", note: "Up from 10 reps — brace, don't rotate, breathe through the hold" },
-        ]
-      },
+      { id: "A", name: "Superset A — Hip Thrust + Abduction", exercises: [
+        { name: "KB Hip Thrust (bench, 3-sec squeeze)", sets: "4", reps: "10", load: "35 lb KB", note: "3-1-1-0 tempo. FBB cue: at the bottom, feel the glute fully stretched before driving up. At the top, posterior tilt and squeeze for 3 full seconds — count it out. Don't hyperextend." },
+        { name: "Side-Lying Hip Abduction (glute band)", sets: "4", reps: "15/side", load: "Glute band", note: "FBB cue: at the top of each rep, pause and consciously squeeze the glute med before lowering. Heel slightly higher than toes. Feel it working." },
+      ]},
+      { id: "B", name: "Superset B — Staggered Hinge + Loaded Lunge", exercises: [
+        { name: "KB Staggered Stance RDL", sets: "4", reps: "8/side", load: "26 lb KB", note: "3-1-1-0 tempo. FBB cue: at the bottom, pause and breathe into the hamstring stretch. Feel the proximal hamstring loaded before you drive back up. Lower back working = you've gone too far." },
+        { name: "Slant Board Reverse Lunge (DB)", sets: "3", reps: "10/side", load: "10 lb DBs", note: "First week with load. FBB cue: at the bottom, pause 1 second and feel the front quad loaded before driving through the heel. Heels on slope, front shin vertical." },
+      ]},
+      { id: "C", name: "Superset C — Nordic + Anti-Rotation", exercises: [
+        { name: "Nordic Curl Eccentric (5-sec)", sets: "3", reps: "5", load: "Bodyweight", note: "FBB cue: the lowering IS the set. 5-sec minimum, 8-sec if you can. Feel the hamstring tendon loading as you descend. Hips fully extended throughout." },
+        { name: "Pallof Press (band)", sets: "3", reps: "12/side", load: "Small band", note: "Rib stack before you press. FBB cue: at the end of the press, pause and feel the obliques bracing against rotation. That's the muscle you're training." },
+      ]},
     ]
   },
   {
-    id: 3, label: "Day 3", title: "Upper Body — Pull",
-    accent: "#E87A5D",
-    quote: "You don't have to be extreme. Just consistent.",
-    quoteAuthor: "Unknown",
-    preview: "Pull day week 2. Pull-ups are anchored in with a 3-second eccentric this week — that's where the strength is built. The rower opens the session dynamically instead of static mobility. Chest-supported KB row is new — chest on the bench means zero spinal compensation and pure lat and rhomboid work. Dead hangs added to the warmup to decompress the shoulder before loading.",
-    tips: [
-      "500m easy row to open — legs drive first, body swings back, arms pull last. Don't rush. This primes your lats and posterior chain before you touch the bar.",
-      "Chest-supported row: your chest stays in contact with the bench the entire set. If you're rising off the bench to get the weight up, it's too heavy.",
-      "Pull-ups: same max minus 2 reps, but now add a 3-second lowering. You will feel this difference immediately. That eccentric is the training stimulus.",
-    ],
-    warmup: [
-      { name: "500m Easy Row (Concept 2)", reps: "~2 min, easy pace", focus: "Dynamic posterior chain warmup — primes lats, rhomboids, legs before pulling", cue: "Legs-body-arms sequence — don't pull with arms early in the drive" },
-      { name: "Pelvic Tilts (standing)", reps: "10 slow", focus: "Lumbar baseline", cue: "Tuck & untuck — feel your spine find neutral" },
-      { name: "Thread the Needle", reps: "6/side", focus: "Upper back rotation — unlocks pulling mechanics", cue: "Start from the rib cage, not the arm" },
-      { name: "Scapular Wall Slide", reps: "10 reps", focus: "Scapular upward rotation & serratus activation", cue: "Maintain contact the entire time — no peeling away" },
-      { name: "Quadruped Scapular CARs", reps: "4 circles/side", focus: "Full scapulothoracic range of motion prep", cue: "Feel the shoulder blade move independently from the arm" },
-      { name: "Band Pull-Apart (palms up)", reps: "15 reps", focus: "Rear delt, mid trap, rhomboid activation", cue: "Pull to the hips — not just shoulder width" },
-      { name: "Dead Hang (bar)", reps: "2 x 20 sec", focus: "Shoulder decompression & grip prep before pull-ups", cue: "Relax into the hang — feel the shoulder open and decompress" },
-    ],
+    id: 3, label: "Day 3", title: "Upper Body — Pull", accent: "#7EB8F7",
+    note: "FBB focus: every pull starts with the shoulder blade, not the arm. Initiate every rep by retracting the scapula first.",
     supersets: [
-      {
-        id: "A", name: "Superset A — Vertical Pull & Scapular Control",
-        exercises: [
-          { name: "Pull-Up (3-sec eccentric)", sets: 3, reps: "Max -2", load: "Bodyweight", note: "3-second controlled lowering — this is where the strength is built, no rushing" },
-          { name: "Band Pull-Apart", sets: 3, reps: "15", load: "Light band", note: "Rear delt + external rotation — immediate superset after vertical pulling" },
-        ]
-      },
-      {
-        id: "B", name: "Superset B — Chest-Supported Row & Curl",
-        exercises: [
-          { name: "Chest-Supported KB Row (incline bench)", sets: 3, reps: "10/side", load: "35 lb KB", note: "New this week — chest on bench eliminates spinal compensation completely, pure pulling" },
-          { name: "DB Hammer Curl", sets: 3, reps: "12", load: "20-25 lb DB", note: "Biceps pre-fatigued from pull-ups — go with feel, control the eccentric" },
-        ]
-      },
-      {
-        id: "C", name: "Superset C — Posterior Shoulder & Loaded Carry",
-        exercises: [
-          { name: "Face Pull (band)", sets: 3, reps: "15", load: "Light band", note: "External rotation finisher — non-negotiable after pull-up volume" },
-          { name: "Suitcase Carry", sets: 3, reps: "20m/side", load: "35-53 lb KB", note: "Resist the lean — stand completely tall like the weight isn't there" },
-        ]
-      },
+      { id: "W", name: "Warmup — Decompress + Activate", exercises: [
+        { name: "Dead Hang (bar)", sets: "2", reps: "20 sec", load: "Bodyweight", note: "FBB cue: actively let the shoulder socket decompress. Breathe into the sides of your ribcage. Feel the lats engaging passively — that's the lat activation you want before pulling." },
+      ]},
+      { id: "A", name: "Superset A — Vertical Pull + Horizontal Row", exercises: [
+        { name: "Pull-Up (3-sec eccentric)", sets: "3", reps: "max-2", load: "Bodyweight", note: "FBB cue: initiate by depressing and retracting the scapula before you pull. At the top, pause 1 second — feel the lat fully contracted. Lower over 3 full seconds, feel the stretch at the bottom. Stop 2 reps short of failure every set." },
+        { name: "Chest-Supported KB Row (incline bench)", sets: "3", reps: "10/side", load: "35 lb KB", note: "FBB cue: initiate with the shoulder blade, not the elbow. At the top, pause and squeeze the rhomboid — feel the space between your shoulder blades close. 3-sec lower into a full hang." },
+      ]},
+      { id: "B", name: "Superset B — Bicep + Rear Delt", exercises: [
+        { name: "DB Hammer Curl", sets: "3", reps: "10", load: "Same as Week 2", note: "FBB cue: at the top, pause and squeeze the brachialis. 2-sec eccentric into full elbow extension — feel the bicep fully stretched before the next rep. Elbows pinned, no swing." },
+        { name: "Face Pull (band)", sets: "3", reps: "15", load: "Band", note: "FBB cue: pull toward your nose, not your chin. At end position, externally rotate maximally — double bicep pose. Hold 1 second, feel the rear delt contracted. These muscles are almost always undertrained." },
+      ]},
+      { id: "C", name: "Carry Finisher", exercises: [
+        { name: "Suitcase Carry", sets: "3", reps: "20m/side", load: "53 lb KB", note: "FBB cue: feel the opposite oblique working to keep you upright. Don't lean toward the weight — stand as if there's nothing in your hand. That tension is the training stimulus." },
+      ]},
     ]
   },
   {
-    id: 4, label: "Day 4", title: "Full Body — Functional",
-    accent: "#A78BFA",
-    quote: "Fall in love with the process and the results will come.",
-    quoteAuthor: "Eric Thomas",
-    preview: "Full body week 2. Slant board goblet squat replaces flat ground — elevated heel unlocks more depth safely and changes the muscular demand. Medicine ball rotational slam is new — this is the first transverse plane core work in the program and it fills a real gap. Step-up off the step board joins for single-leg quad work with a controlled eccentric. Bike erg available as a run substitute if legs are heavy.",
-    tips: [
-      "Slant board goblet squat: elbows inside knees at the bottom, sit deep, breathe at the bottom. The heel elevation makes a significant difference in depth — go slow.",
-      "Medicine ball rotational slam: hips rotate first, arms follow. This is not an arm exercise. Feel the obliques and hip rotators driving the movement.",
-      "Step-up: drive through the heel of the elevated foot. Don't push off the bottom foot — that defeats the purpose of the single-leg stimulus.",
-    ],
-    warmup: [
-      { name: "Pelvic Tilts (standing)", reps: "10 slow", focus: "Lumbar neutral — full body session starts here", cue: "Own this position before you load anything" },
-      { name: "Hip Circles (standing)", reps: "8 each direction", focus: "Hip joint prep for squat + step-up patterns", cue: "Let the pelvis drive — smooth and full" },
-      { name: "Ankle CARs", reps: "6 full circles/side", focus: "Ankle mobility — directly improves squat depth on slant board", cue: "Maximize each circle, feel the resistance at end range" },
-      { name: "Goblet Squat Hold (slant board, BW)", reps: "3 x 10-sec hold at bottom", focus: "Hip, ankle & thoracic mobility — slant board squat pattern prep", cue: "Elbows inside knees, chest tall, breathe at the bottom" },
-      { name: "Thread the Needle", reps: "5/side", focus: "Upper back rotation for overhead carry", cue: "Open the chest — reach long with the top arm" },
-      { name: "Shoulder CAR", reps: "4 slow circles/side", focus: "Shoulder joint prep for waiter carry", cue: "Full arc — behind the head and around, zero shortcuts" },
-      { name: "Step-Up (bodyweight, slow)", reps: "8/side", focus: "Single-leg pattern prep and balance before loading", cue: "Drive through heel of elevated foot, don't push off bottom foot" },
-    ],
+    id: 4, label: "Day 4", title: "Full Body — Functional", accent: "#E87A5D",
+    note: "FBB focus: quality reps through full functional ranges. AMRAP finisher at the end — quality enforced throughout, no form breakdown.",
     supersets: [
-      {
-        id: "A", name: "Superset A — Squat Pattern & Rotational Core",
-        exercises: [
-          { name: "Slant Board Goblet Squat (KB)", sets: 4, reps: "10", load: "35 lb KB", note: "Heels elevated on slant board — sit deep, chest tall, breathe at the bottom" },
-          { name: "Medicine Ball Rotational Slam (20 lb)", sets: 4, reps: "8/side", load: "20 lb med ball", note: "New — hips rotate first, slam to the side, catch and control. First transverse plane core work in program" },
-        ]
-      },
-      {
-        id: "B", name: "Superset B — Step-Up & Glute Bridge",
-        exercises: [
-          { name: "Step-Up (DB, slow eccentric)", sets: 3, reps: "8/side", load: "15 lb DB", note: "New — step up platform, 3-sec lower back down, drive through heel only on way up" },
-          { name: "Glute Bridge (BB, light)", sets: 3, reps: "12", load: "Light BB", note: "Posterior tilt at top — drive through heels, 2-sec hold at lockout" },
-        ]
-      },
-      {
-        id: "C", name: "Superset C — Overhead Carry & Breathe",
-        exercises: [
-          { name: "KB Waiter Carry", sets: 3, reps: "20m/side", load: "20-26 lb KB", note: "Wrist stacked over elbow over shoulder — no drifting forward, core braced" },
-          { name: "Crocodile Breathing", sets: 3, reps: "5 breaths", load: "Bodyweight", note: "Prone, breathe into your back — PT recovery, finish every session with this" },
-        ]
-      },
+      { id: "A", name: "Superset A — Squat + Rotation", exercises: [
+        { name: "Slant Board Goblet Squat (KB)", sets: "4", reps: "8", load: "35 lb KB", note: "3-sec descent. FBB cue: at the bottom, pause and take one breath — feel the hips fully open and quads loaded. That's your functional range. Drive through heels, tall chest on the way up." },
+        { name: "Medicine Ball Rotational Slam (20 lb)", sets: "3", reps: "8/side", load: "20 lb", note: "FBB cue: load the hip away from the direction of the slam — feel the oblique and glute coiling before you release. Hips drive first, arms follow. Catch the rebound — the deceleration is part of the training." },
+      ]},
+      { id: "B", name: "Superset B — Single Leg + Hip Extension", exercises: [
+        { name: "Step-Up (DB, slow eccentric)", sets: "3", reps: "8/side", load: "10 lb DBs", note: "FBB cue: at the top, pause and feel the glute of the working leg fully contracted before you lower. Drive through heel only. 3-sec eccentric. The step down is where the strength is built." },
+        { name: "Glute Bridge (BB, light)", sets: "3", reps: "12", load: "Light BB", note: "FBB cue: at the top, posterior tilt and hold 2 seconds. Feel the difference between glute squeeze and lower back extension — you want all glute, zero lumbar." },
+      ]},
+      { id: "C", name: "Carry + Breathwork", exercises: [
+        { name: "KB Waiter Carry", sets: "3", reps: "20m/side", load: "35 lb KB", note: "FBB cue: feel the serratus anterior working to keep the KB stable overhead. Wrist over elbow over shoulder. Ribs down, core braced." },
+        { name: "Crocodile Breathing", sets: "1", reps: "5 min", load: "Bodyweight", note: "FBB finish: completely passive. Breathe into your lower back and feel it expand. Activates multifidus and deep stabilisers. Exhale fully before each breath." },
+      ]},
+      { id: "D", name: "AMRAP Finisher — 6 min, quality enforced", exercises: [
+        { name: "Goblet Squat x5 / Push-Up x5 / Dead Bug x5/side", sets: "1", reps: "AMRAP 6 min", load: "20 lb KB / Bodyweight", note: "FBB AMRAP rules: every rep is a quality rep. The moment form breaks, rest. No grinding bad reps. Goblet squat — full depth, breathe at bottom. Push-up — full chest stretch at bottom. Dead bug — lower back flat always. Track your rounds." },
+      ]},
     ]
   },
 ];
@@ -590,6 +491,75 @@ export const WIFE_DAYS = [
   }
 ];
 
+// ─── SHORT ON TIME — 25 min versions ─────────────────────────────────────────
+const SHORT_DAYS = [
+  {
+    id: 1, label: "Day 1", title: "Upper Body — Push", accent: "#E8C547",
+    duration: "25 min",
+    note: "Short version — highest value movements only. Full compounds, FBB cues intact.",
+    supersets: [
+      { id: "A", name: "Superset A — Chest + Unilateral Press", exercises: [
+        { name: "Deficit Push-Up (hands on dip bar handles)", sets: "3", reps: "8", load: "Bodyweight", note: "3-1-1-0 tempo. Pause and breathe at the bottom. Elbows 45 degrees." },
+        { name: "Single Arm KB Press (kneeling)", sets: "3", reps: "8/side", load: "26 lb KB", note: "3-1-1-0 tempo. Feel the shoulder loaded before you press. Left then right." },
+      ]},
+      { id: "B", name: "Superset B — Vertical Push", exercises: [
+        { name: "Dip (bodyweight, upright torso)", sets: "3", reps: "8", load: "BW + band assist", note: "3-1-1-0 tempo. Stay upright. Pause and breathe at the bottom." },
+        { name: "Heel Tap (supine)", sets: "3", reps: "10/side", load: "Bodyweight", note: "Lower back flat. Slow. Core reset between sets." },
+      ]},
+    ]
+  },
+  {
+    id: 2, label: "Day 2", title: "Lower Body — Glute & Ham", accent: "#6EC6A0",
+    duration: "25 min",
+    note: "Short version — hip thrust, hinge, and nordic. The three highest-value glute and hamstring movements.",
+    supersets: [
+      { id: "A", name: "Superset A — Hip Thrust + Hinge", exercises: [
+        { name: "KB Hip Thrust (bench, 3-sec squeeze)", sets: "4", reps: "10", load: "35 lb KB", note: "3-1-1-0 tempo. Feel the glute fully stretched at bottom. 3-sec squeeze at top. Posterior tilt." },
+        { name: "KB Staggered Stance RDL", sets: "4", reps: "8/side", load: "26 lb KB", note: "3-1-1-0 tempo. Breathe into the hamstring stretch at the bottom. Stop before lower back." },
+      ]},
+      { id: "B", name: "Superset B — Nordic", exercises: [
+        { name: "Nordic Curl Eccentric (5-sec)", sets: "3", reps: "5", load: "Bodyweight", note: "5-sec lower. Hips fully extended. Catch, reset, go again." },
+        { name: "Pallof Press (band)", sets: "3", reps: "10/side", load: "Small band", note: "Rib stack. Pause at end. Quick but quality." },
+      ]},
+    ]
+  },
+  {
+    id: 3, label: "Day 3", title: "Upper Body — Pull", accent: "#7EB8F7",
+    duration: "25 min",
+    note: "Short version — decompress, pull, row. Everything you need for the back in 25 minutes.",
+    supersets: [
+      { id: "W", name: "Warmup", exercises: [
+        { name: "Dead Hang (bar)", sets: "2", reps: "20 sec", load: "Bodyweight", note: "Decompress, breathe, feel the lats engage passively." },
+      ]},
+      { id: "A", name: "Superset A — Vertical Pull + Row", exercises: [
+        { name: "Pull-Up (3-sec eccentric)", sets: "3", reps: "max-2", load: "Bodyweight", note: "Scapula first. Pause at top. 3-sec lower. Stop 2 short of failure." },
+        { name: "Chest-Supported KB Row (incline bench)", sets: "3", reps: "10/side", load: "35 lb KB", note: "Initiate with the shoulder blade. Pause at top, squeeze rhomboid. 3-sec lower." },
+      ]},
+      { id: "B", name: "Finisher", exercises: [
+        { name: "Face Pull (band)", sets: "3", reps: "15", load: "Band", note: "Elbows high. External rotate at end. Hold 1 second. Rear delt health." },
+      ]},
+    ]
+  },
+  {
+    id: 4, label: "Day 4", title: "Full Body — Functional", accent: "#E87A5D",
+    duration: "25 min",
+    note: "Short version — squat, single leg, bridge, and a 3-min AMRAP to finish. Full body in 25.",
+    supersets: [
+      { id: "A", name: "Superset A — Squat + Single Leg", exercises: [
+        { name: "Slant Board Goblet Squat (KB)", sets: "3", reps: "8", load: "35 lb KB", note: "3-sec descent. Pause at bottom, breathe. Drive through heels." },
+        { name: "Step-Up (DB, slow eccentric)", sets: "3", reps: "8/side", load: "10 lb DBs", note: "Drive through heel only. Pause at top. 3-sec lower." },
+      ]},
+      { id: "B", name: "Superset B — Hip Extension", exercises: [
+        { name: "Glute Bridge (BB, light)", sets: "3", reps: "12", load: "Light BB", note: "Posterior tilt at top. 2-sec hold. All glute, zero lumbar." },
+      ]},
+      { id: "C", name: "AMRAP Finisher — 3 min", exercises: [
+        { name: "Goblet Squat x5 / Push-Up x5 / Dead Bug x5/side", sets: "1", reps: "AMRAP 3 min", load: "20 lb KB / Bodyweight", note: "Half the time, same quality rules. Every rep counts. Form breaks = rest. Track your rounds." },
+      ]},
+    ]
+  },
+];
+
+
 export {
   CURRENT_WEEK,
   WEEK_THEME,
@@ -600,4 +570,9 @@ export {
   NEURO_SNACKS,
   DAYS,
   COOLDOWNS,
+  SHORT_DAYS,
+  WIFE_DAYS,
+  WIFE_CURRENT_WEEK,
+  WIFE_WEEK_THEME,
+  WIFE_RPE_RANGE,
 };
