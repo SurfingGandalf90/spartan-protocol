@@ -12,6 +12,7 @@ import {
   NEURO_SNACKS,
   DAYS,
   COOLDOWNS,
+  SHORT_DAYS,
 } from '@/lib/program'
 
 function SpartanLogo({ size = 48 }) {
@@ -725,76 +726,13 @@ function CoachChat({ day }) {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const [loading, setLoading] = useState(false);
-
-  const send = async () => {
+  const send = () => {
     const text = input.trim();
     if (!text) return;
     setInput("");
     const userMsg = { role: "user", content: text };
-    setMessages(prev => [...prev, userMsg, { role: "assistant", content: "▊" }]);
-    setLoading(true);
-    try {
-      const exerciseContext = day.supersets.flatMap(ss => ss.exercises).map(ex => ex.name + ": " + ex.note).join("\n");
-      const res = await fetch("/api/coach", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          system: "You are a back-safe strength coach for Spartan Protocol. The athlete has a disc injury history. Today is " + day.title + " (Week " + CURRENT_WEEK + "). Exercises today: " + exerciseContext + ". Keep answers concise, practical, and always back-safe. Never recommend spinal flexion under load or axial compression.",
-          messages: [...messages, userMsg].slice(-6).map(m => ({ role: m.role, content: m.content }))
-        })
-      });
-      if (!res.ok) throw new Error("Server error");
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let full = "";
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        full += decoder.decode(value, { stream: true });
-        setMessages(prev => [...prev.slice(0, -1), { role: "assistant", content: full + "▊" }]);
-      }
-      setMessages(prev => [...prev.slice(0, -1), { role: "assistant", content: full }]);
-    } catch (e) {
-      setMessages(prev => [...prev.slice(0, -1), { role: "assistant", content: "Connection error — check your internet and try again." }]);
-    } finally {
-      setLoading(false);
-    }
-
-
-  };
-
-  const sendMessage = async (text) => {
-    if (!text.trim() || loading) return;
-    const userMsg = { role: "user", content: text.trim() };
-    setMessages(prev => [...prev, userMsg, { role: "assistant", content: "▊" }]);
-    setLoading(true);
-    try {
-      const exerciseContext = day.supersets.flatMap(ss => ss.exercises).map(ex => ex.name + ": " + ex.note).join("\n");
-      const res = await fetch("/api/coach", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          system: "You are a back-safe strength coach for Spartan Protocol. The athlete has a disc injury history. Today is " + day.title + " (Week " + CURRENT_WEEK + "). Exercises today: " + exerciseContext + ". Keep answers concise, practical, and always back-safe. Never recommend spinal flexion under load or axial compression.",
-          messages: [...messages, userMsg].slice(-6).map(m => ({ role: m.role, content: m.content }))
-        })
-      });
-      if (!res.ok) throw new Error("Server error");
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let full = "";
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        full += decoder.decode(value, { stream: true });
-        setMessages(prev => [...prev.slice(0, -1), { role: "assistant", content: full + "▊" }]);
-      }
-      setMessages(prev => [...prev.slice(0, -1), { role: "assistant", content: full }]);
-    } catch (e) {
-      setMessages(prev => [...prev.slice(0, -1), { role: "assistant", content: "Connection error — try again." }]);
-    } finally {
-      setLoading(false);
-    }
+    const reply = getCoachResponse(text, day);
+    setMessages(prev => [...prev, userMsg, { role: "assistant", content: reply }]);
   };
 
   const handleKey = (e) => {
@@ -807,12 +745,18 @@ function CoachChat({ day }) {
     <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 220px)", minHeight: 360 }}>
 
       {/* Exercise quick-tap chips */}
-      {(
+      {messages.length === 1 && (
         <div style={{ marginBottom: 14 }}>
           <div style={{ fontSize: 10, color: "#444", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 8 }}>Tap an exercise to ask about it</div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
             {allExercises.map((ex, i) => (
-              <button key={i} onClick={() => sendMessage("How do I cue " + ex.name + "?")} style={{
+              <button key={i} onClick={() => {
+                const q = "How do I cue " + ex.name + "?";
+                setMessages(prev => [...prev,
+                  { role: "user", content: q },
+                  { role: "assistant", content: getCoachResponse(q, day) }
+                ]);
+              }} style={{
                 background: "#111", border: "1px solid #2a2a2a", color: "#777",
                 fontFamily: "DM Mono,monospace", fontSize: 10, padding: "6px 10px",
                 cursor: "pointer", letterSpacing: "0.03em", textAlign: "left",
@@ -822,23 +766,18 @@ function CoachChat({ day }) {
           <div style={{ fontSize: 10, color: "#444", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 8 }}>Or ask anything</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
             {["My back feels tight — should I stop?", "Give me a substitute for an exercise", "Why is this exercise in today's session?"].map((q, i) => (
-              <button key={i} onClick={() => sendMessage(q)} style={{
+              <button key={i} onClick={() => {
+                setMessages(prev => [...prev,
+                  { role: "user", content: q },
+                  { role: "assistant", content: getCoachResponse(q, day) }
+                ]);
+              }} style={{
                 textAlign: "left", background: "#0d0d0d", border: "1px solid #1e1e1e",
                 color: "#666", fontFamily: "DM Mono,monospace", fontSize: 11,
                 padding: "8px 12px", cursor: "pointer", letterSpacing: "0.03em",
               }}>{q}</button>
             ))}
           </div>
-        </div>
-      )}
-
-      {/* Reset conversation */}
-      {messages.length > 1 && (
-        <div style={{ marginBottom: 8, display: "flex", justifyContent: "flex-end" }}>
-          <button onClick={() => setMessages([{ role: "assistant", content: "I'm here. You're on " + day.title + " — Week " + CURRENT_WEEK + ". Ask me about any exercise, form cues, substitutions, or why it's in the program." }])}
-            style={{ background: "none", border: "1px solid #2a2a2a", color: "#555", fontFamily: "DM Mono,monospace", fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", padding: "5px 10px", cursor: "pointer" }}>
-            ↩ New conversation
-          </button>
         </div>
       )}
 
@@ -855,7 +794,7 @@ function CoachChat({ day }) {
               border: "1px solid " + (msg.role === "user" ? day.accent + "35" : "#222"),
               fontSize: 13, color: msg.role === "user" ? day.accent : "#ccc",
               lineHeight: 1.7, letterSpacing: "0.02em",
-            }}><span className={msg.content === "▊" ? "blink" : ""}>{msg.content}</span></div>
+            }}>{msg.content}</div>
           </div>
         ))}
         <div ref={bottomRef} />
@@ -870,11 +809,11 @@ function CoachChat({ day }) {
             resize: "none", letterSpacing: "0.02em", lineHeight: 1.5, outline: "none" }}
           onFocus={e => e.target.style.borderColor = day.accent}
           onBlur={e => e.target.style.borderColor = "#2a2a2a"} />
-        <button onClick={send} disabled={!input.trim() || loading} style={{
-          background: !input.trim() || loading ? "#1a1a1a" : day.accent,
-          color: !input.trim() || loading ? "#444" : "#0F0F0F",
+        <button onClick={send} disabled={!input.trim()} style={{
+          background: !input.trim() ? "#1a1a1a" : day.accent,
+          color: !input.trim() ? "#444" : "#0F0F0F",
           border: "none", width: 48, fontSize: 20,
-          cursor: !input.trim() || loading ? "not-allowed" : "pointer", flexShrink: 0,
+          cursor: !input.trim() ? "not-allowed" : "pointer", flexShrink: 0,
         }}>↑</button>
       </div>
     </div>
@@ -1112,7 +1051,7 @@ function ScheduleView() {
 
   const saveAssignments = (next) => {
     setAssignments(next);
-    try { localStorage.setItem("schedule-assignments", JSON.stringify(next)); window.dispatchEvent(new CustomEvent("schedule-updated", { detail: next })); } catch {}
+    try { localStorage.setItem("schedule-assignments", JSON.stringify(next)); } catch {}
   };
 
   const getDay = (key, def) => assignments[key] || def;
@@ -1339,11 +1278,11 @@ export default function ProgramUI(props: any) {
   const [openSets, setOpenSets] = useState({});
   const [showWarmup, setShowWarmup] = useState(false);
   const [view, setView] = useState("program"); // program | log
-  const [scheduleAssignments, setScheduleAssignments] = useState({});
   const [logModal, setLogModal] = useState(null);
   const [sessionLogs, setSessionLogs] = useState({});
   const [logSaved, setLogSaved] = useState(false);
   const [travelMode, setTravelMode] = useState(false);
+  const [shortMode, setShortMode] = useState(false);
   const [runLogs, setRunLogs] = useState({});
   const [swapped, setSwapped] = useState({});
   const [unit, setUnit] = useState("lb");
@@ -1379,18 +1318,10 @@ export default function ProgramUI(props: any) {
         const u = localStorage.getItem("weight-unit");
         if (u) setUnit(u);
         const rl = localStorage.getItem("run-logs");
-        const sa = localStorage.getItem("schedule-assignments");
-        if (sa) setScheduleAssignments(JSON.parse(sa));
         if (rl) setRunLogs(JSON.parse(rl));
       } catch (e) {}
     }
     load();
-    const handleStorage = () => {
-      const sa = localStorage.getItem("schedule-assignments");
-      if (sa) setScheduleAssignments(JSON.parse(sa));
-    };
-    window.addEventListener("storage", handleStorage); window.addEventListener("schedule-updated", (e) => { if (e.detail) setScheduleAssignments(e.detail); });
-    return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
   const saveUnit = (u) => {
@@ -1422,16 +1353,11 @@ export default function ProgramUI(props: any) {
 
   const toggleSet = (key) => setOpenSets(prev => ({ ...prev, [key]: !prev[key] }));
 
-  const weekdayOrder = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
-  const activeWeekday = weekdayOrder[activeDay];
-  const weekRuns = NRC_PROGRAM[CURRENT_WEEK]?.runs || [];
-  const hasRunToday = weekRuns.some(r => (scheduleAssignments["run-" + r.runNum] || r.day) === activeWeekday);
-  const day = DAYS.find(d => (scheduleAssignments["lift-" + d.id] || ["Monday","Tuesday","Thursday","Saturday"][d.id-1]) === activeWeekday) || (hasRunToday ? { id: 0, label: activeWeekday, title: "Run Day", accent: "#6EC6A0", quote: "The run is the work.", quoteAuthor: "Spartan Protocol", supersets: [], tips: [], preview: "", warmup: [] } : { id: 0, label: activeWeekday, title: "Rest Day", accent: "#444", quote: "Rest is where adaptation happens.", quoteAuthor: "Science", supersets: [], tips: [], preview: "No lift scheduled today.", warmup: [] });
-  const isRestDay = !DAYS.find(d => (scheduleAssignments["lift-" + d.id] || ["Monday","Tuesday","Thursday","Saturday"][d.id-1]) === activeWeekday) && !hasRunToday;
-  const activeDayWeekday = (isRestDay || day.id === 0) ? activeWeekday : (scheduleAssignments["lift-" + day.id] || ["Monday","Tuesday","Thursday","Saturday"][day.id-1]);
-  const dayLog = day ? sessionLogs[`w${CURRENT_WEEK}-d${day.id}`] : null;
+  const day = (shortMode ? SHORT_DAYS : DAYS)[activeDay];
+  const dayLog = sessionLogs[`w${CURRENT_WEEK}-d${day.id}`];
   const weekLogs = DAYS.map(d => sessionLogs[`w${CURRENT_WEEK}-d${d.id}`]).filter(Boolean);
   const allLogged = weekLogs.length === DAYS.length;
+
   return (
     <div style={{ fontFamily: "'DM Mono','Courier New',monospace", background: "#0F0F0F", minHeight: "100vh", color: "#E8E8E0" }}>
       <style>{`
@@ -1439,11 +1365,11 @@ export default function ProgramUI(props: any) {
         * { box-sizing: border-box; margin: 0; padding: 0; }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
-        .day-tab { cursor:pointer; padding:14px 10px; border:1px solid #444; background:transparent; color:#999; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.1em; transition:all 0.2s; text-transform:uppercase; position:relative; }
-        .day-tab:hover { border-color:#666; color:#ccc; }
+        .day-tab { cursor:pointer; padding:10px 14px; border:1px solid #2a2a2a; background:transparent; color:#555; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.1em; transition:all 0.2s; text-transform:uppercase; position:relative; }
+        .day-tab:hover { border-color:#444; color:#aaa; }
         .day-tab.active { background:var(--accent); border-color:var(--accent); color:#0F0F0F; font-weight:500; }
         .day-tab.logged::after { content:''; position:absolute; top:3px; right:3px; width:5px; height:5px; border-radius:50%; background:#6EC6A0; }
-        .blink { animation: blink 1s step-end infinite; } @keyframes blink { 50% { opacity: 0; } } .superset-card { border:1px solid #222; border-left:3px solid var(--accent); background:#141414; margin-bottom:12px; }
+        .superset-card { border:1px solid #222; border-left:3px solid var(--accent); background:#141414; margin-bottom:12px; }
         .superset-header { padding:14px 18px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; }
         .superset-header:hover { background:#1a1a1a; }
         .exercise-row { padding:10px 18px 10px 32px; border-top:1px solid #1e1e1e; display:grid; grid-template-columns:1fr auto; gap:8px; align-items:start; }
@@ -1451,7 +1377,7 @@ export default function ProgramUI(props: any) {
         .toggle-btn { background:transparent; border:1px solid #333; color:#888; font-family:'DM Mono',monospace; font-size:11px; padding:6px 14px; cursor:pointer; letter-spacing:0.05em; transition:all 0.2s; }
         .toggle-btn:hover { border-color:#666; color:#ccc; }
         .rule-chip { display:inline-flex; align-items:center; gap:6px; background:#1a1a1a; border:1px solid #2a2a2a; border-radius:2px; padding:6px 12px; font-size:11px; color:#888; letter-spacing:0.04em; }
-        .nav-tab { background:transparent; border:none; font-family:'DM Mono',monospace; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; padding:10px 0; border-bottom:2px solid transparent; transition:all 0.2s; }
+        .nav-tab { background:transparent; border:none; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; padding:6px 0; border-bottom:1px solid transparent; transition:all 0.2s; }
         .log-btn { font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; padding:10px 18px; cursor:pointer; transition:all 0.2s; border:none; }
         .timer-block { background:#161616; border:1px solid #222; padding:12px 18px; font-size:11px; color:#666; letter-spacing:0.08em; text-transform:uppercase; display:flex; gap:24px; flex-wrap:wrap; }
       `}</style>
@@ -1470,17 +1396,17 @@ export default function ProgramUI(props: any) {
               </div>
             </div>
             <div style={{ display: "flex", gap: 18, paddingTop: 4 }}>
-              <button className="nav-tab" style={{ color: view === "program" ? "#E8E8E0" : "#999", borderBottomColor: view === "program" ? "#666" : "transparent" }} onClick={() => setView("program")}>Program</button>
-              <button className="nav-tab" style={{ color: view === "log" ? "#E8E8E0" : "#999", borderBottomColor: view === "log" ? "#666" : "transparent" }} onClick={() => setView("log")}>
+              <button className="nav-tab" style={{ color: view === "program" ? "#E8E8E0" : "#444", borderBottomColor: view === "program" ? "#666" : "transparent" }} onClick={() => setView("program")}>Program</button>
+              <button className="nav-tab" style={{ color: view === "log" ? "#E8E8E0" : "#444", borderBottomColor: view === "log" ? "#666" : "transparent" }} onClick={() => setView("log")}>
                 Log {weekLogs.length > 0 && <span style={{ color: "#6EC6A0" }}>({weekLogs.length}/4)</span>}
               </button>
-              <button className="nav-tab" style={{ color: view === "coach" ? "#E8E8E0" : "#999", borderBottomColor: view === "coach" ? day?.accent || "#E8C547" : "transparent" }} onClick={() => setView("coach")}>
+              <button className="nav-tab" style={{ color: view === "coach" ? "#E8E8E0" : "#444", borderBottomColor: view === "coach" ? day.accent : "transparent" }} onClick={() => setView("coach")}>
                 Coach
               </button>
-              <button className="nav-tab" style={{ color: view === "neuro" ? "#E8E8E0" : "#999", borderBottomColor: view === "neuro" ? "#A78BFA" : "transparent" }} onClick={() => setView("neuro")}>
+              <button className="nav-tab" style={{ color: view === "neuro" ? "#E8E8E0" : "#444", borderBottomColor: view === "neuro" ? "#A78BFA" : "transparent" }} onClick={() => setView("neuro")}>
                 Neuro
               </button>
-              <button className="nav-tab" style={{ color: view === "schedule" ? "#E8E8E0" : "#999", borderBottomColor: view === "schedule" ? "#6EC6A0" : "transparent" }} onClick={() => setView("schedule")}>
+              <button className="nav-tab" style={{ color: view === "schedule" ? "#E8E8E0" : "#444", borderBottomColor: view === "schedule" ? "#6EC6A0" : "transparent" }} onClick={() => setView("schedule")}>
                 Schedule
               </button>
             </div>
@@ -1495,13 +1421,12 @@ export default function ProgramUI(props: any) {
 
           {(view === "program" || view === "coach") && (
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap", paddingBottom: 0 }}>
-              { ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"].map((weekday, i) => {
-                const d = DAYS.find(d => (scheduleAssignments["lift-" + d.id] || ["Monday","Tuesday","Thursday","Saturday"][d.id-1]) === weekday); const weekRuns = NRC_PROGRAM[CURRENT_WEEK]?.runs || []; const hasRun = weekRuns.some(r => (scheduleAssignments["run-" + r.runNum] || r.day) === weekday); const defaultLiftDays = ["Monday","Tuesday","Thursday","Saturday"]; const defaultRunDays = ["Monday","Tuesday","Thursday","Friday"]; if (!d && !hasRun && !defaultLiftDays.includes(weekday) && !defaultRunDays.includes(weekday)) return null;
-                const logged = d ? !!sessionLogs[`w${CURRENT_WEEK}-d${d.id}`] : false;
+              {DAYS.map((d, i) => {
+                const logged = !!sessionLogs[`w${CURRENT_WEEK}-d${d.id}`];
                 return (
-                  <button key={weekday} className={`day-tab${activeDay === i ? " active" : ""}${logged ? " logged" : ""}`}
-                    style={{ "--accent": d?.accent || "#6EC6A0" }} onClick={() => { setActiveDay(i); setShowWarmup(false); }}>
-                    {weekday.slice(0,3).toUpperCase()}
+                  <button key={d.id} className={`day-tab${activeDay === i ? " active" : ""}${logged ? " logged" : ""}`}
+                    style={{ "--accent": d.accent }} onClick={() => { setActiveDay(i); setShowWarmup(false); }}>
+                    {d.label}
                   </button>
                 );
               })}
@@ -1528,14 +1453,14 @@ export default function ProgramUI(props: any) {
           <>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 16 }}>
               <div>
-                <div style={{ fontSize: 10, color: "#555", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 3 }}>Ask Coach · {day?.label}</div>
-                <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 18, fontWeight: 700, color: day?.accent }}>{day?.title}</div>
+                <div style={{ fontSize: 10, color: "#555", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 3 }}>Ask Coach · {day.label}</div>
+                <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 18, fontWeight: 700, color: day.accent }}>{day.title}</div>
               </div>
               <div style={{ fontSize: 10, color: "#3a3a3a", letterSpacing: "0.06em", textAlign: "right" }}>
                 Context-aware<br />back-safe only
               </div>
             </div>
-            <CoachChat key={`coach-${day?.id}`} day={day || DAYS[0]} />
+            <CoachChat key={`coach-${day.id}`} day={day} />
           </>
         )}
 
@@ -1596,7 +1521,7 @@ export default function ProgramUI(props: any) {
 
             {logSaved && (
               <div style={{ padding: "10px 16px", background: "#0a150a", border: "1px solid #1a3a1a", fontSize: 11, color: "#4a8a6a", marginTop: 8 }}>
-                ✓ Log saved - Claude can read this when you ask for next week's program
+                ✓ Log saved — Claude can read this when you ask for next week's program
               </div>
             )}
 
@@ -1618,13 +1543,6 @@ export default function ProgramUI(props: any) {
         {/* ── PROGRAM VIEW ── */}
         {view === "program" && (
           <>
-            {isRestDay && <div style={{ textAlign: "center", padding: "60px 20px" }}><div style={{ marginBottom: 16 }}><SpartanLogo size={48} /></div><div style={{ fontFamily: "Syne,sans-serif", fontSize: 22, fontWeight: 700, color: "#E8E8E0", marginBottom: 12 }}>Recovery Day</div><div style={{ fontSize: 13, color: "#555", lineHeight: 1.8, maxWidth: 320, margin: "0 auto" }}>Your muscles grow when you rest, not when you train. Embrace it.</div></div>}
-
-
-
-
-
-
             {/* Logged badge */}
             {dayLog && (
               <div style={{ padding: "8px 14px", background: "#0a150a", border: "1px solid #1a3a1a", marginBottom: 16, fontSize: 11, color: "#3a6a4a", letterSpacing: "0.05em", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -1632,7 +1550,7 @@ export default function ProgramUI(props: any) {
                 <button onClick={() => setLogModal(day)} style={{ background: "none", border: "none", color: "#4a8a6a", fontFamily: "'DM Mono',monospace", fontSize: 10, cursor: "pointer", letterSpacing: "0.06em" }}>Edit</button>
               </div>
             )}
-            {!isRestDay && (<>
+
             {/* Quote */}
             <div style={{ borderLeft: `3px solid ${day.accent}`, paddingLeft: 16, marginBottom: 24 }}>
               <div style={{ fontFamily: "'Syne',sans-serif", fontSize: "clamp(13px,3vw,17px)", fontWeight: 700, color: "#D0D0C8", lineHeight: 1.45, marginBottom: 6, fontStyle: "italic" }}>
@@ -1644,7 +1562,7 @@ export default function ProgramUI(props: any) {
             {/* Day title + log button */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 16 }}>
               <div>
-                <span style={{ fontSize: 10, color: "#555", letterSpacing: "0.15em", textTransform: "uppercase" }}>{day.label} · {scheduleAssignments["lift-" + day.id] || ["Monday","Tuesday","Thursday","Saturday"][day.id-1]} · Week {CURRENT_WEEK}</span>
+                <span style={{ fontSize: 10, color: "#555", letterSpacing: "0.15em", textTransform: "uppercase" }}>{day.label} · Week {CURRENT_WEEK}</span>
                 <h2 style={{ fontFamily: "'Syne',sans-serif", fontSize: 22, fontWeight: 700, color: day.accent, marginTop: 2 }}>{day.title}</h2>
               </div>
               <button className="log-btn" onClick={() => setLogModal(day)}
@@ -1658,9 +1576,9 @@ export default function ProgramUI(props: any) {
               const weekRuns = NRC_PROGRAM[CURRENT_WEEK]?.runs || [];
               const todayRuns = weekRuns.filter(r => r.day === ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][new Date().getDay()]);
               // Show run card on lift days that also have a run (Mon/Tue/Thu) or always show based on active day mapping
-              const run = weekRuns.find(r => (scheduleAssignments["run-" + r.runNum] || r.day) === activeDayWeekday);
-
-
+              const dayRunMap = { 1: "Monday", 2: "Tuesday", 3: "Thursday", 4: null };
+              const runDay = dayRunMap[day.id];
+              const run = runDay ? weekRuns.find(r => r.day === runDay) : null;
               if (!run) return null;
               const runKey = `w${CURRENT_WEEK}-run${run.runNum}`;
               const runStatus = runLogs[runKey];
@@ -1763,8 +1681,17 @@ export default function ProgramUI(props: any) {
               )}
             </div>
 
-            {/* Travel mode toggle */}
-            <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
+            {/* Travel mode + Short on Time toggles */}
+            <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginBottom: 12 }}>
+              <button onClick={() => setShortMode(v => !v)} style={{
+                background: shortMode ? "#0d1a2a" : "transparent",
+                border: "1px solid " + (shortMode ? "#7EB8F7" : "#2a2a2a"),
+                color: shortMode ? "#7EB8F7" : "#555",
+                fontFamily: "DM Mono,monospace", fontSize: 10, letterSpacing: "0.1em",
+                textTransform: "uppercase", padding: "6px 12px", cursor: "pointer",
+              }}>
+                {shortMode ? "✓ Short mode — 25 min" : "Short on time?"}
+              </button>
               <button onClick={() => { setTravelMode(v => !v); setSwapped({}); }} style={{
                 background: travelMode ? "#1a2a1a" : "transparent",
                 border: "1px solid " + (travelMode ? "#4a8a4a" : "#2a2a2a"),
@@ -1895,12 +1822,12 @@ export default function ProgramUI(props: any) {
             {!dayLog && (
               <div style={{ marginTop: 20, padding: "14px 18px", background: "#111", border: "1px solid #1e1e1e", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
                 <span style={{ fontSize: 11, color: "#555", letterSpacing: "0.05em" }}>Done with this session?</span>
-                <button className="log-btn" onClick={() => setLogModal(day)} style={{ background: day.accent, color: "#0F0F0F", border: "none", fontWeight: 500 }}>
+                <button className="log-btn" onClick={() => setLogModal(day)}
+                  style={{ background: day.accent, color: "#0F0F0F", border: "none", fontWeight: 500 }}>
                   Log It →
                 </button>
               </div>
             )}
-            </>)}
 
             <div style={{ marginTop: 16, padding: "10px 16px", background: "#0d0d0d", border: "1px solid #1a1a1a", fontSize: 11, color: "#444", letterSpacing: "0.04em" }}>
               Mobility inspired by Steph Rose / Phase SiX — <span style={{ color: "#555" }}>phase6online.com</span>
