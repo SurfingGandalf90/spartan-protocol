@@ -110,7 +110,7 @@ export async function getSchedule(userId: string) {
     .from('schedule_assignments')
     .select('*')
     .eq('user_id', userId)
-    .single()
+    .maybeSingle()
   return data || { assignments: {}, dance_day: null }
 }
 
